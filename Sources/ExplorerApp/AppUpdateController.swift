@@ -1,4 +1,5 @@
 import AppKit
+import ExplorerCore
 import Sparkle
 
 struct UpdateConfiguration {
@@ -46,7 +47,7 @@ final class AppUpdateController: NSObject, SPUUpdaterDelegate {
     private let gate = UpdateRelaunchGate {
         !FileOperationController.shared.busy && NSApp.modalWindow == nil && !NSApp.windows.contains { $0.attachedSheet != nil }
     }
-    private(set) var status = "Automatic updates are available in official releases."
+    private(set) var status = L("text.automatic.updates.are.available.in.official.releases.755871a5")
     var isAvailable: Bool { controller != nil }
     var canCheck: Bool { controller?.updater.canCheckForUpdates == true }
     var lastCheck: Date? { controller?.updater.lastUpdateCheckDate }
@@ -65,14 +66,14 @@ final class AppUpdateController: NSObject, SPUUpdaterDelegate {
         do {
             try value.updater.start()
             controller = value
-            status = "Updates are downloaded securely from bquick.io."
+            status = L("text.updates.are.downloaded.securely.from.bquick.io.7ec92bb3")
             observations = [
                 value.updater.observe(\.canCheckForUpdates, options: [.new]) { [weak self] _, _ in Task { @MainActor in self?.notify() } },
                 value.updater.observe(\.lastUpdateCheckDate, options: [.new]) { [weak self] _, _ in Task { @MainActor in self?.notify() } },
                 value.updater.observe(\.automaticallyChecksForUpdates, options: [.new]) { [weak self] _, _ in Task { @MainActor in self?.notify() } },
                 value.updater.observe(\.automaticallyDownloadsUpdates, options: [.new]) { [weak self] _, _ in Task { @MainActor in self?.notify() } }
             ]
-        } catch { status = "Updates could not start: \(error.localizedDescription)" }
+        } catch { status = L("text.updates.could.not.start.argument.62de77c4", error.localizedDescription) }
         notify()
     }
     @objc func checkForUpdates(_ sender: Any?) { controller?.checkForUpdates(sender) }
@@ -81,7 +82,7 @@ final class AppUpdateController: NSObject, SPUUpdaterDelegate {
     func updater(_ updater: SPUUpdater, shouldPostponeRelaunchForUpdate item: SUAppcastItem,
                  untilInvokingBlock installHandler: @escaping () -> Void) -> Bool {
         guard gate.postpone(installHandler) else { return false }
-        status = "Update ready. Waiting for file operations and dialogs to finish."
+        status = L("text.update.ready.waiting.for.file.operations.and.dialogs.to.finish.e38ce5fa")
         notify()
         relaunchTimer?.invalidate()
         relaunchTimer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(resumeUpdateIfReady), userInfo: nil, repeats: true)

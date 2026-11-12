@@ -1,5 +1,6 @@
 import AppKit
 import Carbon
+import ExplorerCore
 
 /// Finder owns the native Get Info UI. Paths are Apple-event parameters, never
 /// interpolated AppleScript source, and no keyboard/UI scripting is involved.
@@ -22,7 +23,7 @@ actor FinderInformation {
             end tell
         end run
         """
-        guard let script = NSAppleScript(source: source) else { return "Could not prepare Finder’s Get Info command." }
+        guard let script = NSAppleScript(source: source) else { return L("text.could.not.prepare.finder.s.get.info.command.7aea821d") }
         let event = NSAppleEventDescriptor(eventClass: AEEventClass(kCoreEventClass), eventID: AEEventID(kAEOpenApplication),
                                           targetDescriptor: nil, returnID: AEReturnID(kAutoGenerateReturnID), transactionID: AETransactionID(kAnyTransactionID))
         event.setParam(Self.arguments(for: urls), forKeyword: AEKeyword(keyDirectObject))
@@ -30,9 +31,9 @@ actor FinderInformation {
         script.executeAppleEvent(event, error: &error)
         guard let error else { return nil }
         if (error[NSAppleScript.errorNumber] as? NSNumber)?.intValue == -1743 {
-            return "Allow Explorer to control Finder in System Settings → Privacy & Security → Automation, then try Properties again."
+            return L("text.allow.explorer.to.control.finder.in.system.settings.privacy.security.17bb9a75")
         }
-        return error[NSAppleScript.errorMessage] as? String ?? "Finder could not open Get Info for this selection."
+        return error[NSAppleScript.errorMessage] as? String ?? L("text.finder.could.not.open.get.info.for.this.selection.7e66e2e2")
     }
 }
 
@@ -42,13 +43,13 @@ enum FileProperties {
         guard !urls.isEmpty, urls.allSatisfy(\.isFileURL) else { return }
         Task {
             if let error = await FinderInformation.shared.show(urls) {
-                let alert = NSAlert(); alert.messageText = "Couldn’t Open Properties"; alert.informativeText = error
+                let alert = NSAlert(); alert.messageText = L("text.couldn.t.open.properties.a5384b35"); alert.informativeText = error
                 if let window, window.attachedSheet == nil { await alert.beginSheetModal(for: window) }
                 else { alert.runModal() }
             }
         }
     }
     static func item(urls: [URL], window: NSWindow?) -> NSMenuItem {
-        ContextMenu.item("Properties", symbol: "info.circle") { [weak window] in show(urls, window: window) }
+        ContextMenu.item(L("text.properties.ae43692b"), symbol: "info.circle") { [weak window] in show(urls, window: window) }
     }
 }

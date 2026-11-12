@@ -206,12 +206,12 @@ final class WorkspaceViewController: NSViewController, NSSplitViewDelegate {
     }
     func updatePaneLabels() {
         for browser in [left, right].compactMap({ $0 }) where browser.isViewLoaded {
-            let side = browser === left ? "Left" : "Right", active = browser === activeBrowser
+            let side = browser === left ? L("text.left.58eb9032") : L("text.right.883361d5"), active = browser === activeBrowser
             browser.paneBadge.stringValue = dualPane ? side : ""
             browser.paneBadge.textColor = active ? .controlAccentColor : .secondaryLabelColor
             browser.paneBadgeWidth?.constant = dualPane ? 43 : 0
             browser.paneHeader?.color = Palette.chrome
-            browser.view.setAccessibilityLabel(dualPane ? "\(side) browsing pane\(active ? ", active" : "")" : "File browser")
+            browser.view.setAccessibilityLabel(dualPane ? (active ? L("text.argument.browsing.pane.active.75be360b", side) : L("text.argument.browsing.pane.beb82033", side)) : L("text.file.browser.66e3ff00"))
             browser.dualButton?.active = dualPane
             browser.copyOtherButton?.isHidden = !dualPane; browser.moveOtherButton?.isHidden = !dualPane
             browser.updateStatus()

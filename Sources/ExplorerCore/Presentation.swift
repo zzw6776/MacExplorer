@@ -5,12 +5,12 @@ public enum FileViewMode: String, CaseIterable, Sendable {
     public var usesTable: Bool { self == .details || self == .content }
     public var title: String {
         switch self {
-        case .extraLarge: "Extra large icons"
-        case .large: "Large icons"
-        case .medium: "Medium icons"
-        case .small: "Small icons"
-        case .details: "Details"
-        case .content: "Content"
+        case .extraLarge: L("text.extra.large.icons.f445cb66")
+        case .large: L("text.large.icons.4e372356")
+        case .medium: L("text.medium.icons.5c47cdd5")
+        case .small: L("text.small.icons.eff85988")
+        case .details: L("text.details.45989de4")
+        case .content: L("text.content.47bd2907")
         }
     }
     public var shortcutNumber: String {

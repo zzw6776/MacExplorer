@@ -37,9 +37,9 @@ final class ContentResultCell: NSTableCellView {
         let path = item.url.deletingLastPathComponent().path
         SearchHighlight.apply(item.name, to: nameLabel, query: query)
         locationLabel.configure(path, query: query, file: item.url, onOpen: onReveal)
-        modifiedLabel.stringValue = "Date modified: \(modified)"
-        sizeLabel.stringValue = "Size: " + (item.size.map { ByteCountFormatter.string(fromByteCount: $0, countStyle: .file) } ?? "—")
-        kindLabel.stringValue = "Type: \(item.kind)"
+        modifiedLabel.stringValue = L("text.date.modified.argument.dcaa86fe", modified)
+        sizeLabel.stringValue = L("text.size.argument.06a9a6e3", item.size.map { ByteCountFormatter.string(fromByteCount: $0, countStyle: .file) } ?? "—")
+        kindLabel.stringValue = L("text.type.argument.4ad81e2b", item.kind)
         picture.image = icon
         alphaValue = dimmed ? 0.35 : item.isHidden ? 0.6 : 1
         nameLabel.toolTip = item.name
@@ -100,7 +100,7 @@ extension BrowserViewController {
             default: column.isHidden = content
             }
         }
-        table.setAccessibilityLabel(content ? (tab.hasSearchQuery ? "Search results, Content view" : "Files, Content view") : "Files in current folder")
+        table.setAccessibilityLabel(content ? (tab.hasSearchQuery ? L("text.search.results.content.view.3aca9587") : L("text.files.content.view.06277e70")) : L("text.files.in.current.folder.59c1b000"))
         fitContentTable()
     }
 

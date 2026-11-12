@@ -41,17 +41,17 @@ struct ContextActionsTests {
             browser.table.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
             let menu = NSMenu(); browser.populateContextMenu(menu)
             let titles = menu.items.map(\.title)
-            #expect(titles.contains("Properties")); #expect(titles.contains("Compress to ZIP"))
-            #expect(titles.contains("Extract All…") == (name == "Archive.ZIP"))
-            #expect(titles.contains("Open With") == (name != "Folder"))
+            #expect(titles.contains(L("text.properties.ae43692b"))); #expect(titles.contains(L("text.compress.to.zip.83cbfce7")))
+            #expect(titles.contains(L("text.extract.all.0311fbf1")) == (name == "Archive.ZIP"))
+            #expect(titles.contains(L("text.open.with.e7d0eeb7")) == (name != "Folder"))
             if name != "Folder" {
-                let sub = try #require(menu.items.first { $0.title == "Open With" }?.submenu)
-                #expect(sub.items.last?.title == "Other…")
+                let sub = try #require(menu.items.first { $0.title == L("text.open.with.e7d0eeb7") }?.submenu)
+                #expect(sub.items.last?.title == L("text.other.1e375292"))
             }
         }
         browser.table.deselectAll(nil)
         let menu = NSMenu(); browser.populateContextMenu(menu)
-        #expect(menu.items.contains { $0.title == "Properties" })
-        #expect(!menu.items.contains { $0.title == "Compress to ZIP" })
+        #expect(menu.items.contains { $0.title == L("text.properties.ae43692b") })
+        #expect(!menu.items.contains { $0.title == L("text.compress.to.zip.83cbfce7") })
     }
 }

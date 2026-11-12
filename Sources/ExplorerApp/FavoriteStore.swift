@@ -13,7 +13,8 @@ final class FavoriteStore {
             favorites = Favorites(stored.items)
         } else {
             let home = FileManager.default.homeDirectoryForCurrentUser
-            favorites = Favorites([Favorite(url: home, name: "Home")] + ["Desktop", "Downloads", "Documents", "Pictures"].map { Favorite(url: home.appendingPathComponent($0), name: $0) })
+            let folders = [("Desktop", L("text.desktop.9bd88f24")), ("Downloads", L("text.downloads.d5fdc1af")), ("Documents", L("text.documents.b4e929d8")), ("Pictures", L("text.pictures.1e624500"))]
+            favorites = Favorites([Favorite(url: home, name: L("text.home.3a786953"))] + folders.map { Favorite(url: home.appendingPathComponent($0.0), name: $0.1) })
         }
     }
     func toggle(_ url: URL) {

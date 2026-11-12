@@ -25,7 +25,7 @@ final class FileCollectionView: NSCollectionView, ExplorerDragSource, NSUserInte
     func validateUserInterfaceItem(_ item: NSValidatedUserInterfaceItem) -> Bool {
         let actions: [Selector: FileAction] = [#selector(cut): .cut, #selector(copy(_:)): .copy, #selector(paste): .paste, #selector(undo): .undo]
         if let action = item.action, let fileAction = actions[action] {
-            if fileAction == .undo, let menu = item as? NSMenuItem { menu.title = FileOperationController.shared.undoTitle.map { "Undo \($0)" } ?? "Undo" }
+            if fileAction == .undo, let menu = item as? NSMenuItem { menu.title = FileOperationController.shared.undoTitle.map { L("text.undo.argument.d11a0767", $0) } ?? L("text.undo.a8283ade") }
             return canFileAction?(fileAction) == true
         }
         return true
@@ -130,7 +130,7 @@ final class FileIconItem: NSCollectionViewItem {
         picture.alphaValue = dimmed ? 0.35 : item.isHidden ? 0.6 : 1; name.alphaValue = picture.alphaValue
         view.toolTip = [item.url.path, FileColors.description(item.finderColors)].filter { !$0.isEmpty }.joined(separator: "\n")
         view.setAccessibilityLabel([item.name, FileColors.description(item.finderColors)].filter { !$0.isEmpty }.joined(separator: ", "))
-        view.setAccessibilityHelp(item.isNavigable ? "Folder. Double-click to open, or drop files here." : "Press Space for Quick Look.")
+        view.setAccessibilityHelp(item.isNavigable ? L("text.folder.double.click.to.open.or.drop.files.here.800869c1") : L("text.press.space.for.quick.look.ac6d3d74"))
         view.needsLayout = true
         guard mode != .small else { return }
         thumbnail = ThumbnailStore.shared.request(item, size: mode.iconSize, scale: scale) { [weak self] image in

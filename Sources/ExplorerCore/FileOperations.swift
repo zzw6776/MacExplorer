@@ -13,14 +13,14 @@ public enum FileOperation: Sendable {
 
     public var title: String {
         switch self {
-        case .copy: "Copy"
-        case .move: "Move"
-        case .rename: "Rename"
-        case .newFolder: "New Folder"
-        case .trash: "Trash"
-        case .color: "Change Color Label"
-        case .compress: "Compress"
-        case .extract: "Extract All"
+        case .copy: L("text.copy.e21f935f")
+        case .move: L("text.move.6ecc3df6")
+        case .rename: L("text.rename.3064d79a")
+        case .newFolder: L("text.new.folder.c75ba807")
+        case .trash: L("text.trash.c560122a")
+        case .color: L("text.change.color.label.16dfe957")
+        case .compress: L("text.compress.033fc044")
+        case .extract: L("text.extract.all.564208dc")
         }
     }
 }
@@ -78,7 +78,7 @@ public actor FileOperationEngine {
     }
     public static func fileVolume(_ url: URL) throws -> UInt64 {
         let attributes = try FileManager().attributesOfItem(atPath: url.path)
-        guard let number = attributes[.systemNumber] as? NSNumber else { throw FileOperationError("Could not identify the volume for \(url.path)") }
+        guard let number = attributes[.systemNumber] as? NSNumber else { throw FileOperationError(L("text.could.not.identify.the.volume.for.argument.eccf72ac", url.path)) }
         return number.uint64Value
     }
     public var undoTitle: String? { history.last?.title }
@@ -86,21 +86,21 @@ public actor FileOperationEngine {
     public static func systemTrash(_ url: URL) throws -> URL {
         var result: NSURL?
         try FileManager().trashItem(at: url, resultingItemURL: &result)
-        guard let result else { throw FileOperationError("macOS did not return the item's Trash location.") }
+        guard let result else { throw FileOperationError(L("text.macos.did.not.return.the.item.s.trash.location.129707d2")) }
         return result as URL
     }
 
     public static func validateName(_ name: String) throws {
         guard !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               name != ".", name != "..", !name.contains("/"), !name.contains("\0"), !name.contains(":") else {
-            throw FileOperationError("Enter a name without /, : or null characters. The name cannot be empty, . or ..")
+            throw FileOperationError(L("text.enter.a.name.without.or.null.characters.the.name.cannot.0ac46fe6"))
         }
     }
 
     public func perform(_ operation: FileOperation,
                         resolve: ResolveConflict = { _ in ConflictResolution(.cancel) },
                         progress: ReportProgress = { _ in }) async -> OperationReport {
-        guard !busy else { return failed("Another file operation is running.") }
+        guard !busy else { return failed(L("text.another.file.operation.is.running.617d8538")) }
         busy = true; defer { busy = false }
         switch operation {
         case let .compress(urls, target): return await archive(urls, to: target, extracting: false, resolve: resolve, progress: progress)
@@ -136,7 +136,7 @@ public actor FileOperationEngine {
                 if case let .color(_, color) = operation {
                     let stamp = try snapshotNode(source)
                     guard stamp.type != FileAttributeType.typeSymbolicLink.rawValue else {
-                        throw FileOperationError("Color labels on symbolic links are not supported. The linked item was left untouched.")
+                        throw FileOperationError(L("text.color.labels.on.symbolic.links.are.not.supported.the.linked.aefc2a60"))
                     }
                     let before = try FinderColors.read(source), after = try FinderColors.changing(before, to: color)
                     if before == after { report.skipped += 1; continue }
@@ -168,10 +168,10 @@ public actor FileOperationEngine {
                 default: fatalError("Handled above")
                 }
                 if original.isDirectory && isInside(destination, source) {
-                    throw FileOperationError("A folder cannot be copied or moved into itself: \(source.lastPathComponent)")
+                    throw FileOperationError(L("text.a.folder.cannot.be.copied.or.moved.into.itself.argument.3192af67", source.lastPathComponent))
                 }
                 if isInside(source, destination) {
-                    throw FileOperationError("The destination contains the source item. Choose a different destination.")
+                    throw FileOperationError(L("text.the.destination.contains.the.source.item.choose.a.different.destination.72cbfc75"))
                 }
                 let sameEntry = sameIdentity(source, destination)
                 if source.path == destination.path {
@@ -222,18 +222,18 @@ public actor FileOperationEngine {
     private func archive(_ urls: [URL], to target: URL, extracting: Bool,
                          resolve: ResolveConflict, progress: ReportProgress) async -> OperationReport {
         var report = OperationReport()
-        let title = extracting ? "Extract All" : "Compress"
+        let title = extracting ? L("text.extract.all.564208dc") : L("text.compress.033fc044")
         do {
-            guard target.isFileURL else { throw FileOperationError("Choose a local destination.") }
+            guard target.isFileURL else { throw FileOperationError(L("text.choose.a.local.destination.1666c797")) }
             let sources = try normalizedSelection(urls)
-            guard !sources.isEmpty else { throw FileOperationError("Select at least one item.") }
+            guard !sources.isEmpty else { throw FileOperationError(L("text.select.at.least.one.item.3e9dc56c")) }
             var destination = canonicalItem(target)
             try Self.validateName(destination.lastPathComponent)
             let parent = destination.deletingLastPathComponent()
             try FileSystem.validateDirectory(parent)
             for source in sources {
                 if source == destination || sameIdentity(source, destination) || isInside(destination, source) || isInside(source, destination) {
-                    throw FileOperationError("Choose a destination outside the selected items.")
+                    throw FileOperationError(L("text.choose.a.destination.outside.the.selected.items.f1ae010d"))
                 }
             }
             let originals = try sources.map { try snapshot($0) }
@@ -273,7 +273,7 @@ public actor FileOperationEngine {
                 let failure = error
                 if let backup {
                     do { try exclusiveMove(backup, destination) }
-                    catch { throw FileOperationError("\(failure.localizedDescription) The original destination remains at \(backup.path).") }
+                    catch { throw FileOperationError(L("text.argument.the.original.destination.remains.at.argument.d9396132", failure.localizedDescription, backup.path)) }
                 }
                 throw failure
             }
@@ -287,7 +287,7 @@ public actor FileOperationEngine {
     }
 
     public func undo(progress: ReportProgress = { _ in }) async -> OperationReport {
-        guard !busy else { return failed("Another file operation is running.") }
+        guard !busy else { return failed(L("text.another.file.operation.is.running.617d8538")) }
         guard var record = history.last else { return OperationReport() }
         busy = true; defer { busy = false }
         var report = OperationReport()
@@ -300,7 +300,7 @@ public actor FileOperationEngine {
             for step in record.steps {
                 try Task.checkCancellation()
                 let current: Snapshot
-                if vacant.contains(step.source.path) { throw FileOperationError("An item needed by Undo is missing: \(step.source.path)") }
+                if vacant.contains(step.source.path) { throw FileOperationError(L("text.an.item.needed.by.undo.is.missing.argument.e09a30b2", step.source.path)) }
                 else if let projected = virtual[step.source.path] { current = projected }
                 else { current = try step.colorChange == nil ? snapshot(step.source) : Snapshot(nodes: ["": snapshotNode(step.source)]) }
                 guard current == step.expected else { throw changedError(step.source) }
@@ -311,7 +311,7 @@ public actor FileOperationEngine {
                 if let target = step.destination {
                     let occupied = virtual[target.path] != nil || (!vacant.contains(target.path) && exists(target))
                     if occupied && !isCaseOnlyRename(step.source, target) {
-                        throw FileOperationError("Undo stopped because \(target.path) is occupied. Move that item aside, then try Undo again.")
+                        throw FileOperationError(L("text.undo.stopped.because.argument.is.occupied.move.that.item.aside.3368929e", target.path))
                     }
                     virtual[target.path] = current; vacant.remove(target.path)
                 }
@@ -320,7 +320,7 @@ public actor FileOperationEngine {
             let total = record.steps.count
             while let step = record.steps.first {
                 try Task.checkCancellation()
-                await progress(OperationProgress(title: "Undo \(record.title)", item: step.source.lastPathComponent, index: total - record.steps.count + 1, total: total))
+                await progress(OperationProgress(title: L("text.undo.argument.d11a0767", record.title), item: step.source.lastPathComponent, index: total - record.steps.count + 1, total: total))
                 try Task.checkCancellation()
                 if let change = step.colorChange {
                     guard try Snapshot(nodes: ["": snapshotNode(step.source)]) == step.expected else { throw changedError(step.source) }
@@ -395,7 +395,9 @@ public actor FileOperationEngine {
                 if let backup { try exclusiveMove(backup, destination) }
             } catch {
                 // Keep all recovery locations in the error, including partial rollback.
-                throw FileOperationError("\(failure.localizedDescription) Recovery also stopped: \(error.localizedDescription)\nCheck \(destination.path)\(backup.map { "\nOriginal destination: \($0.path)" } ?? "")\(sourceBackup.map { "\nOriginal source: \($0.path)" } ?? "").")
+                let backupDetail = backup.map { L("text.original.destination.argument.677613b2", $0.path) } ?? ""
+                let sourceDetail = sourceBackup.map { L("text.original.source.argument.5df51bac", $0.path) } ?? ""
+                throw FileOperationError(L("text.argument.recovery.also.stopped.argument.check.argument.argument.argument.cf309bfc", failure.localizedDescription, error.localizedDescription, destination.path, backupDetail, sourceDetail))
             }
             if exists(staging) { try? fm.removeItem(at: staging) } // Only our incomplete, unpublished copy.
             throw failure
@@ -407,7 +409,7 @@ public actor FileOperationEngine {
     }
     private func protectRoot(_ url: URL) throws {
         guard url.path != "/", url.path != FileManager.default.homeDirectoryForCurrentUser.path else {
-            throw FileOperationError("The startup root and your home folder cannot be changed by Explorer.")
+            throw FileOperationError(L("text.the.startup.root.and.your.home.folder.cannot.be.changed.9c17313a"))
         }
     }
     private func canonicalItem(_ url: URL) -> URL {
@@ -419,7 +421,7 @@ public actor FileOperationEngine {
     private func normalizedSelection(_ urls: [URL]) throws -> [URL] {
         var unique: [URL] = []
         for url in urls {
-            guard url.isFileURL else { throw FileOperationError("Only local file URLs are supported.") }
+            guard url.isFileURL else { throw FileOperationError(L("text.only.local.file.urls.are.supported.38cbcf3c")) }
             let item = canonicalItem(url)
             if !unique.contains(item) { unique.append(item) }
         }
@@ -448,7 +450,7 @@ public actor FileOperationEngine {
         let stem = ext.isEmpty ? url.lastPathComponent : url.deletingPathExtension().lastPathComponent
         var index = 1
         while true {
-            let suffix = index == 1 ? " - Copy" : " - Copy (\(index))"
+            let suffix = index == 1 ? L("text.copy.1af0c725") : L("text.copy.argument.7cd39087", index)
             let name = stem + suffix + (ext.isEmpty ? "" : "." + ext)
             let result = url.deletingLastPathComponent().appendingPathComponent(name)
             if !exists(result) { return result }
@@ -466,7 +468,7 @@ public actor FileOperationEngine {
         if result != 0 {
             let code = errno
             throw NSError(domain: NSPOSIXErrorDomain, code: Int(code), userInfo: [NSFilePathErrorKey: destination.path,
-                NSLocalizedDescriptionKey: "Could not move \(source.lastPathComponent) to \(destination.path): \(String(cString: strerror(code)))"])
+                NSLocalizedDescriptionKey: L("text.could.not.move.argument.to.argument.argument.61d54202", source.lastPathComponent, destination.path, String(cString: strerror(code)))])
         }
     }
 
@@ -513,7 +515,7 @@ public actor FileOperationEngine {
         }
     }
     private func changedError(_ url: URL) -> FileOperationError {
-        FileOperationError("\(url.path) has changed since this operation was recorded. Explorer left it untouched.")
+        FileOperationError(L("text.argument.has.changed.since.this.operation.was.recorded.explorer.left.20fe130c", url.path))
     }
     private struct UndoStep: Sendable {
         let source: URL

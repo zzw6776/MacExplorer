@@ -88,7 +88,7 @@ final class ArchiveTests: XCTestCase {
         let (root, engine) = try fixture()
         let input = try file("input.txt", in: root), archive = try file("Archive.zip", in: root, text: "keep")
         let kept = await engine.perform(.compress([input], to: archive), resolve: { _ in .init(.keepBoth) })
-        XCTAssertNil(kept.error); XCTAssertEqual(kept.completed.first?.lastPathComponent, "Archive - Copy.zip")
+        XCTAssertNil(kept.error); XCTAssertEqual(kept.completed.first?.lastPathComponent, "Archive" + L("text.copy.1af0c725") + ".zip")
         let skipped = await engine.perform(.compress([input], to: archive), resolve: { _ in .init(.skip) })
         XCTAssertEqual(skipped.skipped, 1)
         let cancelled = await engine.perform(.compress([input], to: archive), resolve: { _ in .init(.cancel) })
@@ -96,7 +96,7 @@ final class ArchiveTests: XCTestCase {
         let output = root.appendingPathComponent("Result")
         try fm.createDirectory(at: output, withIntermediateDirectories: false)
         let extracted = await engine.perform(.extract(try XCTUnwrap(kept.completed.first), to: output), resolve: { _ in .init(.keepBoth) })
-        XCTAssertNil(extracted.error); XCTAssertEqual(extracted.completed.first?.lastPathComponent, "Result - Copy")
+        XCTAssertNil(extracted.error); XCTAssertEqual(extracted.completed.first?.lastPathComponent, "Result" + L("text.copy.1af0c725"))
     }
 
     func testUndoProtectsEditedExtractedFiles() async throws {

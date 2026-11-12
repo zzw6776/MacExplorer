@@ -14,10 +14,10 @@ public struct FileItem: Identifiable, Sendable, Equatable {
     public let finderColors: FinderColorSummary
     public var isNavigable: Bool { isDirectory && !isPackage }
     public var kind: String {
-        if isNavigable { return "Folder" }
-        if url.pathExtension.lowercased() == "app" { return "Application" }
-        if isPackage { return "Package" }
-        return url.pathExtension.isEmpty ? "File" : "\(url.pathExtension.uppercased()) file"
+        if isNavigable { return L("text.folder.74ccd433") }
+        if url.pathExtension.lowercased() == "app" { return L("text.application.e7ad522e") }
+        if isPackage { return L("text.package.59de121d") }
+        return url.pathExtension.isEmpty ? L("text.file.50009ce1") : L("text.argument.file.4a336db6", url.pathExtension.uppercased())
     }
 
     public init(url: URL, name: String, isDirectory: Bool, isPackage: Bool = false,
@@ -107,7 +107,7 @@ public enum FileSystem {
         }
         guard isDirectory.boolValue else {
             throw NSError(domain: NSCocoaErrorDomain, code: NSFileReadUnsupportedSchemeError,
-                userInfo: [NSLocalizedDescriptionKey: "This path is not a folder."])
+                userInfo: [NSLocalizedDescriptionKey: L("text.this.path.is.not.a.folder.2b992aa3")])
         }
     }
 }

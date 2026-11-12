@@ -36,7 +36,7 @@ final class FinderColorTests: XCTestCase {
         let original = try FinderColors.read(url)
         let change = await engine.perform(.color([url], .red)); XCTAssertNil(change.error)
         let changed = try FinderColors.read(url)
-        XCTAssertEqual(try changed.entries, ["Red\n6", "Client\n2", "Keep", "Red"])
+        XCTAssertEqual(try changed.entries, ["\(FinderColor.red.name)\n6", "Client\n2", "Keep", "Red"])
         XCTAssertEqual(changed.label, 6)
         let remove = await engine.perform(.color([url], .none)); XCTAssertNil(remove.error)
         XCTAssertEqual(try FinderColors.read(url).entries, ["Client\n2", "Keep", "Red"])

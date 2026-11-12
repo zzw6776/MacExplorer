@@ -1,5 +1,6 @@
 import AppKit
 import Carbon
+import ExplorerCore
 
 struct LaunchShortcut: Codable, Equatable, Sendable {
     let keyCode: UInt32
@@ -26,8 +27,8 @@ enum ShortcutError: LocalizedError {
     case registration(OSStatus), invalid
     var errorDescription: String? {
         switch self {
-        case .registration(let status): "This shortcut could not be registered (\(status)). It may already be in use. Choose another combination."
-        case .invalid: "Use Command, Control, or Option together with a letter or number."
+        case .registration(let status): L("text.this.shortcut.could.not.be.registered.argument.it.may.already.89bad9fc", status)
+        case .invalid: L("text.use.command.control.or.option.together.with.a.letter.or.6878f812")
         }
     }
 }

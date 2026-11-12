@@ -75,7 +75,7 @@ enum ExternalApplications {
         !items.isEmpty && items.allSatisfy { !$0.isDirectory && !$0.isPackage && $0.url.isFileURL }
     }
     static func editorTitle(for urls: [URL]) -> String {
-        "Open \(urls.allSatisfy(TextFileTypes.recognizes) ? "with" : "as Text with") \(name(for: .editor))"
+        urls.allSatisfy(TextFileTypes.recognizes) ? L("text.open.with.argument.6f44e52f", name(for: .editor)) : L("text.open.as.text.with.argument.c0e508a9", name(for: .editor))
     }
     static func openTerminal(at folder: URL, window: NSWindow?) {
         do { try FileSystem.validateDirectory(folder) }
@@ -88,7 +88,7 @@ enum ExternalApplications {
     }
     private static func open(_ urls: [URL], role: ExternalApplicationRole, window: NSWindow?) {
         guard let app = url(for: role) else {
-            showError("\(name(for: role)) could not be found. Choose another application in Explorer Settings → Applications.", window: window)
+            showError(L("text.argument.could.not.be.found.choose.another.application.in.explorer.04979c48", name(for: role)), window: window)
             return
         }
         open(urls, with: app, window: window)
@@ -101,12 +101,12 @@ enum ExternalApplications {
         }
     }
     static func showError(_ message: String, window: NSWindow?) {
-        let alert = NSAlert(); alert.messageText = "Couldn’t Open Application"; alert.informativeText = message
+        let alert = NSAlert(); alert.messageText = L("text.couldn.t.open.application.527ff5f2"); alert.informativeText = message
         if let window, window.attachedSheet == nil { alert.beginSheetModal(for: window) }
         else { alert.runModal() }
     }
     static func terminalItem(folder: URL, window: NSWindow?, containing: Bool = false) -> NSMenuItem {
-        ContextMenu.item("Open \(containing ? "Containing Folder " : "")in \(name(for: .terminal))", symbol: "terminal") { [weak window] in
+        ContextMenu.item(containing ? L("text.open.containing.folder.in.argument.f7bf5d05", name(for: .terminal)) : L("text.open.in.argument.5b0d7a92", name(for: .terminal)), symbol: "terminal") { [weak window] in
             openTerminal(at: folder, window: window)
         }
     }

@@ -4,12 +4,12 @@ public enum FileGroupKey: String, CaseIterable, Codable, Sendable {
     case none, name, modified, kind, size, created
     public var title: String {
         switch self {
-        case .none: "None"
-        case .name: "Name"
-        case .modified: "Date modified"
-        case .kind: "Type"
-        case .size: "Size"
-        case .created: "Date created"
+        case .none: L("text.none.dc937b59")
+        case .name: L("text.name.dcd1d522")
+        case .modified: L("text.date.modified.eb5e7a5e")
+        case .kind: L("text.type.baaddf70")
+        case .size: L("text.size.1af85190")
+        case .created: L("text.date.created.fa91f762")
         }
     }
     public var defaultAscending: Bool { self != .modified && self != .created }
@@ -43,15 +43,15 @@ public struct FileGrouping: Codable, Equatable, Sendable {
             if ("A"..."H").contains(first) { return Bucket(id: "a-h", title: "A–H", rank: 1) }
             if ("I"..."P").contains(first) { return Bucket(id: "i-p", title: "I–P", rank: 2) }
             if ("Q"..."Z").contains(first) { return Bucket(id: "q-z", title: "Q–Z", rank: 3) }
-            return Bucket(id: "other", title: "Other", rank: 4)
+            return Bucket(id: "other", title: L("text.other.f97e9da0"), rank: 4)
         case .size:
-            if item.isDirectory { return Bucket(id: "folders", title: "Folders", rank: -1) }
-            guard let size = item.size, size >= 0 else { return Bucket(id: "unknown", title: "Unspecified", unknown: true) }
-            let limits: [(Int64, String)] = [(0, "Empty"), (16_384, "Tiny (up to 16 KB)"), (1_048_576, "Small (16 KB–1 MB)"), (134_217_728, "Medium (1–128 MB)"), (1_073_741_824, "Large (128 MB–1 GB)"), (4_294_967_296, "Huge (1–4 GB)")]
+            if item.isDirectory { return Bucket(id: "folders", title: L("text.folders.c4d6bb20"), rank: -1) }
+            guard let size = item.size, size >= 0 else { return Bucket(id: "unknown", title: L("text.unspecified.5b8aa0bf"), unknown: true) }
+            let limits: [(Int64, String)] = [(0, L("text.empty.c6c094bc")), (16_384, L("text.tiny.up.to.16.kb.4d30307e")), (1_048_576, L("text.small.16.kb.1.mb.1142bd55")), (134_217_728, L("text.medium.1.128.mb.70da1513")), (1_073_741_824, L("text.large.128.mb.1.gb.847632f6")), (4_294_967_296, L("text.huge.1.4.gb.6306368d"))]
             for (rank, entry) in limits.enumerated() where size <= entry.0 { return Bucket(id: "size-\(rank)", title: entry.1, rank: rank) }
-            return Bucket(id: "gigantic", title: "Gigantic (over 4 GB)", rank: limits.count)
+            return Bucket(id: "gigantic", title: L("text.gigantic.over.4.gb.a11446b2"), rank: limits.count)
         case .modified, .created:
-            guard let date = key == .modified ? item.modified : item.created else { return Bucket(id: "unknown", title: "Unspecified", unknown: true) }
+            guard let date = key == .modified ? item.modified : item.created else { return Bucket(id: "unknown", title: L("text.unspecified.5b8aa0bf"), unknown: true) }
             let today = calendar.startOfDay(for: now)
             let tomorrow = calendar.date(byAdding: .day, value: 1, to: today)!
             let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
@@ -60,15 +60,15 @@ public struct FileGrouping: Codable, Equatable, Sendable {
             let month = calendar.dateInterval(of: .month, for: now)!.start
             let lastMonth = calendar.date(byAdding: .month, value: -1, to: month)!
             let year = calendar.dateInterval(of: .year, for: now)!.start
-            if date >= tomorrow { return Bucket(id: "future", title: "Future", rank: 8) }
-            if date >= today { return Bucket(id: "today", title: "Today", rank: 7) }
-            if date >= yesterday { return Bucket(id: "yesterday", title: "Yesterday", rank: 6) }
-            if date >= week { return Bucket(id: "this-week", title: "Earlier this week", rank: 5) }
-            if date >= lastWeek { return Bucket(id: "last-week", title: "Last week", rank: 4) }
-            if date >= month { return Bucket(id: "this-month", title: "Earlier this month", rank: 3) }
-            if date >= lastMonth { return Bucket(id: "last-month", title: "Last month", rank: 2) }
-            if date >= year { return Bucket(id: "this-year", title: "Earlier this year", rank: 1) }
-            return Bucket(id: "older", title: "A long time ago", rank: 0)
+            if date >= tomorrow { return Bucket(id: "future", title: L("text.future.61636cde"), rank: 8) }
+            if date >= today { return Bucket(id: "today", title: L("text.today.2b065c7c"), rank: 7) }
+            if date >= yesterday { return Bucket(id: "yesterday", title: L("text.yesterday.56618125"), rank: 6) }
+            if date >= week { return Bucket(id: "this-week", title: L("text.earlier.this.week.ec2f4ce7"), rank: 5) }
+            if date >= lastWeek { return Bucket(id: "last-week", title: L("text.last.week.84c2e09d"), rank: 4) }
+            if date >= month { return Bucket(id: "this-month", title: L("text.earlier.this.month.b7344775"), rank: 3) }
+            if date >= lastMonth { return Bucket(id: "last-month", title: L("text.last.month.b27e31d9"), rank: 2) }
+            if date >= year { return Bucket(id: "this-year", title: L("text.earlier.this.year.3a199b0d"), rank: 1) }
+            return Bucket(id: "older", title: L("text.a.long.time.ago.b540e88e"), rank: 0)
         }
     }
 }

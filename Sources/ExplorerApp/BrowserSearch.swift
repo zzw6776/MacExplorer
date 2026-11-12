@@ -3,7 +3,7 @@ import ExplorerCore
 
 extension BrowserViewController {
     func tabTitle(_ tab: BrowserTab) -> String {
-        tab.isRecursiveSearch ? "\(tab.query) — Search Results in \(title(for: tab.history.current))" : title(for: tab.history.current)
+        tab.isRecursiveSearch ? L("text.argument.search.results.in.argument.d0e89524", tab.query, title(for: tab.history.current)) : title(for: tab.history.current)
     }
 
     func updateSearchControls() {
@@ -14,23 +14,23 @@ extension BrowserViewController {
         tabChips[tab.id]?.update(title: tabTitle(tab), active: true)
         workspace?.updateWindowTitle()
         if tab.isThisMac {
-            search.placeholderString = "Search This Mac"; search.setAccessibilityLabel("Search drives and network locations")
-            search.toolTip = "Filter drives and cloud folders by name or account"; return
+            search.placeholderString = L("text.search.this.mac.6a2313de"); search.setAccessibilityLabel(L("text.search.drives.and.network.locations.a97b0df9"))
+            search.toolTip = L("text.filter.drives.and.cloud.folders.by.name.or.account.3ec8011d"); return
         }
         let recursive = tab.searchScope == .subfolders
-        search.placeholderString = "Search \(title(for: tab.history.current))"
-        search.setAccessibilityLabel(recursive ? "Search folder and subfolders" : "Filter this folder")
-        search.toolTip = recursive ? "Find names in \(tab.history.current.path) and its subfolders" : "Filter names in the current folder"
+        search.placeholderString = L("text.search.argument.bb32c4e3", title(for: tab.history.current))
+        search.setAccessibilityLabel(recursive ? L("text.search.folder.and.subfolders.41cfeedc") : L("text.filter.this.folder.789c5511"))
+        search.toolTip = recursive ? L("text.find.names.in.argument.and.its.subfolders.7bc9d356", tab.history.current.path) : L("text.filter.names.in.the.current.folder.8dab1e79")
     }
 
     func searchOptionsMenu() -> NSMenu {
         let menu = NSMenu(); menu.autoenablesItems = false
-        let title = NSMenuItem(title: "Search options", action: nil, keyEquivalent: "")
+        let title = NSMenuItem(title: L("text.search.options.556a0850"), action: nil, keyEquivalent: "")
         title.image = Palette.buttonSymbol("doc.text.magnifyingglass", size: 14, canvas: 18); menu.addItem(title)
-        for (label, tag, action) in [("Current folder", 1, #selector(changeSearchScope(_:))),
-                                    ("All subfolders", 2, #selector(changeSearchScope(_:))),
-                                    ("Stop search", 3, #selector(stopSearch)),
-                                    ("Search again", 4, #selector(submitSearch))] {
+        for (label, tag, action) in [(L("text.current.folder.1a5db523"), 1, #selector(changeSearchScope(_:))),
+                                    (L("text.all.subfolders.f25b8ff5"), 2, #selector(changeSearchScope(_:))),
+                                    (L("text.stop.search.58bc1824"), 3, #selector(stopSearch)),
+                                    (L("text.search.again.998195e4"), 4, #selector(submitSearch))] {
             if tag == 3 { menu.addItem(.separator()) }
             let item = NSMenuItem(title: label, action: action, keyEquivalent: "")
             item.tag = tag; item.target = self; menu.addItem(item)
@@ -50,12 +50,12 @@ extension BrowserViewController {
     }
     func layoutSearchTools(width: CGFloat) {
         let compact = width < 1040
-        let title = compact ? "Search" : "Search options"
+        let title = compact ? L("text.search.49c266ba") : L("text.search.options.556a0850")
         if searchOptions.menu?.items.first?.title != title { searchOptions.menu?.items.first?.title = title }
         let optionsWidth: CGFloat = compact ? 86 : 132, closeWidth: CGFloat = compact ? 32 : 110
         if searchOptionsWidth?.constant != optionsWidth { searchOptionsWidth?.constant = optionsWidth }
         if closeSearchWidth?.constant != closeWidth { closeSearchWidth?.constant = closeWidth }
-        let closeTitle = compact ? "" : "Close search"
+        let closeTitle = compact ? "" : L("text.close.search.55656b5e")
         if closeSearchButton?.title != closeTitle {
             closeSearchButton?.title = closeTitle
             closeSearchButton?.imagePosition = compact ? .imageOnly : .imageLeading
@@ -137,14 +137,14 @@ extension BrowserViewController {
     func updateSearchStatus() {
         if tab.loading { progress.startAnimation(nil) } else { progress.stopAnimation(nil) }
         let count = tab.visible.count.formatted(), scanned = tab.searchScanned.formatted()
-        if tab.error != nil { status.stringValue = "Search unavailable"; detail.stringValue = ""; return }
-        status.stringValue = "\(count) results"
-        if !selectedItems.isEmpty { status.stringValue += " · \(selectedItems.count) selected" }
-        if tab.loading { detail.stringValue = "Searching · \(scanned) checked" }
-        else if tab.searchStopped { detail.stringValue = "Stopped · partial results" }
-        else if tab.searchLimited { detail.stringValue = "20,000-result limit · refine search" }
-        else { detail.stringValue = tab.searchSkipped > 0 ? "\(tab.searchSkipped) folders unreadable" : "Search complete" }
-        if tab.loading, tab.searchSkipped > 0 { detail.stringValue += " · \(tab.searchSkipped) unreadable" }
+        if tab.error != nil { status.stringValue = L("text.search.unavailable.23ae8063"); detail.stringValue = ""; return }
+        status.stringValue = L("text.argument.results.2edd6105", count)
+        if !selectedItems.isEmpty { status.stringValue += L("text.argument.selected.b78421e3", selectedItems.count) }
+        if tab.loading { detail.stringValue = L("text.searching.argument.checked.c3568a31", scanned) }
+        else if tab.searchStopped { detail.stringValue = L("text.stopped.partial.results.fcc2c6d9") }
+        else if tab.searchLimited { detail.stringValue = L("text.20.000.result.limit.refine.search.6f3efb24") }
+        else { detail.stringValue = tab.searchSkipped > 0 ? L("text.argument.folders.unreadable.a1c480f6", tab.searchSkipped) : L("text.search.complete.227a147b") }
+        if tab.loading, tab.searchSkipped > 0 { detail.stringValue += L("text.argument.unreadable.fc0784f7", tab.searchSkipped) }
     }
     func suspend() {
         closeQuickLook(); cancelSearchWork(); tab.loadTask?.cancel(); tab.sortTask?.cancel(); refreshTask?.cancel()
@@ -166,8 +166,8 @@ extension BrowserViewController {
         let pinned = FavoriteStore.shared.favorites.contains(tab.history.current)
         pinButton?.isEnabled = !tab.isThisMac
         pinButton?.active = pinned
-        pinButton?.toolTip = pinned ? "Unpin current folder (⌘D)" : "Pin current folder (⌘D)"
-        pinButton?.setAccessibilityLabel(pinned ? "Unpin current folder from Favorites" : "Pin current folder to Favorites")
+        pinButton?.toolTip = pinned ? L("text.unpin.current.folder.d.b3dd99ff") : L("text.pin.current.folder.d.17b29efc")
+        pinButton?.setAccessibilityLabel(pinned ? L("text.unpin.current.folder.from.favorites.21ff9e5f") : L("text.pin.current.folder.to.favorites.71f4a6fe"))
     }
     func togglePin() { if !tab.isThisMac { FavoriteStore.shared.toggle(tab.history.current) } }
     @objc func pinSelectedFolder() {

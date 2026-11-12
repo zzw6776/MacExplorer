@@ -93,10 +93,10 @@ private final class StorageCard: NSCollectionViewItem {
         picture.image = StorageArtwork.icon(location.kind)
         bar.capacity = location.capacity; bar.isHidden = location.capacity == nil
         if let capacity = location.capacity {
-            capacityLabel.stringValue = "\(ByteCountFormatter.string(fromByteCount: capacity.available, countStyle: .file)) free of \(ByteCountFormatter.string(fromByteCount: capacity.total, countStyle: .file))"
+            capacityLabel.stringValue = L("text.argument.free.of.argument.6f544c27", ByteCountFormatter.string(fromByteCount: capacity.available, countStyle: .file), ByteCountFormatter.string(fromByteCount: capacity.total, countStyle: .file))
             capacityLabel.textColor = capacity.lowSpace ? .systemRed : .secondaryLabelColor
         } else {
-            capacityLabel.stringValue = location.kind == .googleDrive || location.kind == .cloud ? "Cloud storage" : "Storage information unavailable"
+            capacityLabel.stringValue = location.kind == .googleDrive || location.kind == .cloud ? L("text.cloud.storage.9644abb4") : L("text.storage.information.unavailable.ba9681ad")
             capacityLabel.textColor = .secondaryLabelColor
         }
         let tile = view as! StorageTile
@@ -104,7 +104,7 @@ private final class StorageCard: NSCollectionViewItem {
         tile.dropDestination = location.readOnly ? nil : { location.url }
         view.toolTip = location.url.path + "\n" + capacityLabel.stringValue
         view.setAccessibilityLabel("\(location.title), \(location.detail), \(capacityLabel.stringValue)")
-        view.setAccessibilityHelp("Double-click or press Return to open this location.")
+        view.setAccessibilityHelp(L("text.double.click.or.press.return.to.open.this.location.10210522"))
         view.needsLayout = true
     }
 }
@@ -131,7 +131,7 @@ final class ThisMacView: NSView, NSCollectionViewDataSource, NSCollectionViewDel
         collection.dataSource = self; collection.delegate = self
         collection.register(StorageCard.self, forItemWithIdentifier: StorageCard.identifier)
         collection.register(FileGroupHeader.self, forSupplementaryViewOfKind: NSCollectionView.elementKindSectionHeader, withIdentifier: FileGroupHeader.identifier)
-        collection.setAccessibilityLabel("This Mac drives and network locations")
+        collection.setAccessibilityLabel(L("text.this.mac.drives.and.network.locations.09d8ace9"))
         collection.onOpen = { [weak self] in self?.openSelection(newTab: NSApp.currentEvent?.modifierFlags.contains(.command) == true) }
         collection.onBack = { [weak self] in self?.onBack?() }
         collection.onContext = { [weak self] path in self?.collection.selectionIndexPaths = path.map { [$0] } ?? []; self?.onSelection?() }
@@ -159,14 +159,14 @@ final class ThisMacView: NSView, NSCollectionViewDataSource, NSCollectionViewDel
         self.query = query
         let selected = selectedLocation?.id
         let values = StorageDiscovery.overview(locations, query: query)
-        sections = [("Devices and drives", values.filter { !$0.isNetworkLocation }), ("Network locations", values.filter(\.isNetworkLocation))].filter { !$0.1.isEmpty }
+        sections = [(L("text.devices.and.drives.a285d3c6"), values.filter { !$0.isNetworkLocation }), (L("text.network.locations.41db6c2c"), values.filter(\.isNetworkLocation))].filter { !$0.1.isEmpty }
         collection.reloadData(); flow.invalidateLayout()
         if let selected {
             for (section, entry) in sections.enumerated() where !collapsed.contains(entry.0) {
                 if let item = entry.1.firstIndex(where: { $0.id == selected }) { collection.selectionIndexPaths = [IndexPath(item: item, section: section)] }
             }
         }
-        empty.stringValue = loading ? "Discovering drives and cloud folders…" : query.isEmpty ? "No storage locations are available." : "No locations match “\(query)”."
+        empty.stringValue = loading ? L("text.discovering.drives.and.cloud.folders.a611c14d") : query.isEmpty ? L("text.no.storage.locations.are.available.b2857776") : L("text.no.locations.match.argument.548ec3b6", query)
         empty.isHidden = !values.isEmpty
     }
     func location(_ path: IndexPath) -> StorageLocation? {
@@ -204,13 +204,13 @@ final class ThisMacView: NSView, NSCollectionViewDataSource, NSCollectionViewDel
     func menuNeedsUpdate(_ menu: NSMenu) {
         ContextMenu.configure(menu)
         guard let location = selectedLocation else { return }
-        for (title, action, symbol) in [("Open", #selector(open), "externaldrive"), ("Open in New Tab", #selector(openInTab), "plus.square.on.square"), ("Open in Other Pane", #selector(openInOtherPane), "rectangle.split.2x1")] {
+        for (title, action, symbol) in [(L("text.open.ed077f3d"), #selector(open), "externaldrive"), (L("text.open.in.new.tab.35e74c3a"), #selector(openInTab), "plus.square.on.square"), (L("text.open.in.other.pane.3a4e922d"), #selector(openInOtherPane), "rectangle.split.2x1")] {
             let item = NSMenuItem(title: title, action: action, keyEquivalent: ""); item.target = self
             item.image = NSImage(systemSymbolName: symbol, accessibilityDescription: title); menu.addItem(item)
         }
-        menu.addItem(ContextMenu.item("Open in New Window", symbol: "macwindow.badge.plus") { (NSApp.delegate as? AppDelegate)?.newWindow(urls: [location.url]) })
+        menu.addItem(ContextMenu.item(L("text.open.in.new.window.e8e0ccba"), symbol: "macwindow.badge.plus") { (NSApp.delegate as? AppDelegate)?.newWindow(urls: [location.url]) })
         menu.addItem(.separator())
-        menu.addItem(ContextMenu.item("Copy as Path", symbol: "link") { [weak self] in self?.copyPath() })
+        menu.addItem(ContextMenu.item(L("text.copy.as.path.dccf92d9"), symbol: "link") { [weak self] in self?.copyPath() })
         menu.addItem(ExternalApplications.terminalItem(folder: location.url, window: window))
         menu.addItem(.separator())
         menu.addItem(FileProperties.item(urls: [location.url], window: window))

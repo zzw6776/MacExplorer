@@ -5,17 +5,23 @@ enum StartupLocation: String, CaseIterable {
     case restore, thisMac, home, downloads
     var title: String {
         switch self {
-        case .restore: "Restore previous tabs"
-        case .thisMac: "This Mac"
-        case .home: "Home"
-        case .downloads: "Downloads"
+        case .restore: L("text.restore.previous.tabs.24617592")
+        case .thisMac: L("text.this.mac.79a4aefc")
+        case .home: L("text.home.3a786953")
+        case .downloads: L("text.downloads.d5fdc1af")
         }
     }
 }
 
 enum AppAppearance: String, CaseIterable {
     case system, light, dark
-    var title: String { rawValue.capitalized }
+    var title: String {
+        switch self {
+        case .system: L("text.system.6725e7bb")
+        case .light: L("text.light.dbcd5e7b")
+        case .dark: L("text.dark.60acc53f")
+        }
+    }
     var appearance: NSAppearance? {
         switch self {
         case .system: nil

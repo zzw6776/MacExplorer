@@ -50,7 +50,7 @@ public enum StorageDiscovery {
         let capacity = try? capacityURL.resourceValues(forKeys: [.volumeTotalCapacityKey, .volumeAvailableCapacityKey, .volumeIsReadOnlyKey])
         let readOnly = values?.volumeIsReadOnly ?? false
         return StorageLocation(url: url, title: values?.volumeName ?? (url.path == "/" ? "Macintosh HD" : url.lastPathComponent),
-            detail: kind == .network ? "Network drive" : url.path == "/" ? "Local disk" : readOnly ? "Read-only volume" : kind == .internalDrive ? "Local disk" : "External volume", kind: kind,
+            detail: kind == .network ? L("text.network.drive.e5c4e330") : url.path == "/" ? L("text.local.disk.8c755697") : readOnly ? L("text.read.only.volume.e2d3bf14") : kind == .internalDrive ? L("text.local.disk.8c755697") : L("text.external.volume.a4deb99e"), kind: kind,
             capacity: StorageCapacity(total: capacity?.volumeTotalCapacity.map(Int64.init), available: capacity?.volumeAvailableCapacity.map(Int64.init)), readOnly: readOnly)
     }
     /// Only enumerate provider roots and familiar entry folders, never their file contents.

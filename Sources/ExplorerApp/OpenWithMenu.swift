@@ -1,5 +1,6 @@
 import AppKit
 import UniformTypeIdentifiers
+import ExplorerCore
 
 @MainActor
 enum OpenWithMenu {
@@ -27,7 +28,7 @@ enum OpenWithMenu {
     }
 
     static func item(urls: [URL], window: NSWindow?) -> NSMenuItem {
-        let parent = NSMenuItem(title: "Open With", action: nil, keyEquivalent: "")
+        let parent = NSMenuItem(title: L("text.open.with.e7d0eeb7"), action: nil, keyEquivalent: "")
         parent.image = NSImage(systemSymbolName: "macwindow", accessibilityDescription: nil)
         let menu = NSMenu(); menu.autoenablesItems = false
         let choices = applications(for: urls)
@@ -36,7 +37,7 @@ enum OpenWithMenu {
             let name = ExternalApplications.name(of: app)
             let version = Bundle(url: app)?.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
             let suffix = names.filter { $0 == name }.count > 1 ? " (\(version ?? app.deletingLastPathComponent().lastPathComponent))" : ""
-            let item = ContextMenu.item(name + suffix + (app == choices.defaultApp ? " (Default)" : ""), symbol: "app") { [weak window] in
+            let item = ContextMenu.item(name + suffix + (app == choices.defaultApp ? L("text.default.8b2a7981") : ""), symbol: "app") { [weak window] in
                 ExternalApplications.open(urls, with: app, window: window)
             }
             let icon = NSWorkspace.shared.icon(forFile: app.path).copy() as? NSImage
@@ -44,13 +45,13 @@ enum OpenWithMenu {
             menu.addItem(item)
         }
         if choices.apps.isEmpty {
-            let empty = NSMenuItem(title: "No Registered Applications", action: nil, keyEquivalent: "")
+            let empty = NSMenuItem(title: L("text.no.registered.applications.1f4dda1e"), action: nil, keyEquivalent: "")
             empty.isEnabled = false; menu.addItem(empty)
         }
         menu.addItem(.separator())
-        menu.addItem(ContextMenu.item("Other…", symbol: "ellipsis") { [weak window] in
+        menu.addItem(ContextMenu.item(L("text.other.1e375292"), symbol: "ellipsis") { [weak window] in
             guard let window, window.attachedSheet == nil else { return }
-            let panel = NSOpenPanel(); panel.title = "Open With"; panel.prompt = "Open"
+            let panel = NSOpenPanel(); panel.title = L("text.open.with.e7d0eeb7"); panel.prompt = L("text.open.ed077f3d")
             panel.allowedContentTypes = [.applicationBundle]; panel.canChooseDirectories = false
             panel.allowsMultipleSelection = false; panel.directoryURL = URL(fileURLWithPath: "/Applications")
             panel.beginSheetModal(for: window) { response in

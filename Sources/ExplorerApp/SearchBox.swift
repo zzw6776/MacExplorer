@@ -1,4 +1,5 @@
 import AppKit
+import ExplorerCore
 
 /// Native text editing inside a Windows-style search surface.
 @MainActor
@@ -25,10 +26,10 @@ final class SearchBox: Surface, NSTextFieldDelegate {
         field.font = .systemFont(ofSize: 12); field.delegate = self
         field.cell?.usesSingleLineMode = true; field.cell?.isScrollable = true
         field.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        clearButton = ActionButton(symbol: "xmark", tooltip: "Clear search") { [weak self] in
+        clearButton = ActionButton(symbol: "xmark", tooltip: L("text.clear.search.3b7ea517")) { [weak self] in
             self?.onClear?(); self?.focus()
         }
-        searchButton = ActionButton(symbol: "magnifyingglass", tooltip: "Search") { [weak self] in self?.onSubmit?() }
+        searchButton = ActionButton(symbol: "magnifyingglass", tooltip: L("text.search.49c266ba")) { [weak self] in self?.onSubmit?() }
         clearButton.image = Palette.buttonSymbol("xmark", size: 10)
         searchButton.image = Palette.buttonSymbol("magnifyingglass", size: 12)
         for child in [field, clearButton!, searchButton!] {
