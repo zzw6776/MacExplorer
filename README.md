@@ -12,7 +12,7 @@ MacExplorer brings familiar tabs, a folder tree, drive overviews, and keyboard s
 
 ## Download
 
-本 Fork 推送到 `main` 后，会在 [GitHub Actions](https://github.com/zzw6776/MacExplorer/actions/workflows/ci.yml) 的 **Build Explorer DMG** 中自动生成 Apple Silicon / Intel 通用 DMG。打开成功的运行记录，在 **Artifacts** 下载 `MacExplorer-DMG-运行编号`，解压后打开 DMG，将 Explorer 拖到 Applications 替换安装。
+本 Fork 推送到 `main` 后，会在 [GitHub Actions](https://github.com/zzw6776/MacExplorer/actions/workflows/build-dmg.yml) 的 **Build Explorer DMG** 中自动生成 Apple Silicon / Intel 通用 DMG。打开成功的运行记录，在 **Artifacts** 下载 `MacExplorer-DMG-运行编号`，解压后打开 DMG，将 Explorer 拖到 Applications 替换安装。
 
 开发版固定使用同一份自签名证书，不需要 Apple 开发者账号；尚未经过 Apple 公证，下载后的系统打开提示仍需手动确认。已有权限能否延续取决于签名身份保持一致。
 
