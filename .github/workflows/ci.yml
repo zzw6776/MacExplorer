@@ -6,11 +6,17 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+env:
+  DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
 jobs:
   test:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Show selected toolchain
+        run: |
+          xcodebuild -version
+          swift --version
       - name: Test Swift and release behavior
         run: |
           zsh scripts/test.sh
@@ -22,6 +28,14 @@ jobs:
       - name: Validate shell scripts
         run: |
           for script in scripts/*.sh; do zsh -n "$script"; done
+      - name: Keep test crash reports on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: Explorer-test-crash-reports-${{ github.run_number }}
+          path: ~/Library/Logs/DiagnosticReports/ExplorerPackageTests*
+          if-no-files-found: ignore
+          retention-days: 7
   dmg:
     if: github.event_name != 'pull_request'
     runs-on: macos-15
