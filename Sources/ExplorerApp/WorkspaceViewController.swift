@@ -220,7 +220,7 @@ final class WorkspaceViewController: NSViewController, NSSplitViewDelegate {
     func updateWindowTitle() {
         guard ready else { return }
         let browser = activeBrowser
-        view.window?.title = "\(browser.tabTitle(browser.tab)) — Explorer"
+        view.window?.title = L("text.window.title.explorer", browser.tabTitle(browser.tab))
         // The native document proxy asks IconServices to synchronously enumerate
         // the folder. Protected or unavailable locations can stall window launch.
         // The address bar supplies the path without that main-thread filesystem IO.

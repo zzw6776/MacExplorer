@@ -403,7 +403,7 @@ final class ExplorerWindowController: NSWindowController, NSWindowDelegate {
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView], backing: .buffered, defer: false)
         super.init(window: window)
         window.workspace = workspace; window.browser = browser
-        window.title = "Explorer"
+        window.title = L("text.explorer.c39d646f")
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true
         window.titlebarSeparatorStyle = .none

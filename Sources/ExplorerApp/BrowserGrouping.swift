@@ -23,7 +23,7 @@ final class FileGroupHeader: NSView, NSCollectionViewElement {
     }
     func configure(title: String, count: Int, collapsed: Bool) {
         self.collapsed = collapsed
-        button.title = "  \(title) (\(count.formatted()))"
+        button.title = L("text.group.header.title.count", title, count.formatted())
         button.image = Palette.symbol(collapsed ? "chevron.right" : "chevron.down", size: 10)
         button.setAccessibilityLabel(collapsed ? L("text.expand.argument.group.argument.item.s.4ff8c5a3", title, count) : L("text.collapse.argument.group.argument.item.s.6ef2b828", title, count))
     }

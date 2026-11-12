@@ -6736,6 +6736,30 @@
           }
         }
       }
+    },
+    "text.copyright.binary.quest.2026": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "© Binary Quest Software Pty Ltd" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "© Binary Quest Software Pty Ltd" } }
+      }
+    },
+    "text.group.header.title.count": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "  %@ (%@)" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "  %@（%@）" } }
+      }
+    },
+    "text.storage.accessibility.summary": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "%@, %@, %@" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "%@，%@，%@" } }
+      }
+    },
+    "text.window.title.explorer": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "%@ — Explorer" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "%@ — Explorer" } }
+      }
     }
   },
   "version": "1.0"

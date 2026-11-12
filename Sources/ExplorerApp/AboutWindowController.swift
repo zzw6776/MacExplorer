@@ -30,7 +30,7 @@ final class AboutWindowController: NSWindowController {
         icon.setAccessibilityLabel(L("text.explorer.app.icon.55f599bb"))
         NSLayoutConstraint.activate([icon.widthAnchor.constraint(equalToConstant: 80), icon.heightAnchor.constraint(equalToConstant: 80)])
         stack.addArrangedSubview(icon)
-        stack.addArrangedSubview(label("Explorer", size: 27, weight: .semibold))
+        stack.addArrangedSubview(label(L("text.explorer.c39d646f"), size: 27, weight: .semibold))
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? L("text.development.21b6a798")
         let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
         stack.addArrangedSubview(label(L("text.version.argument.69ea5a45", version) + (build.map { " (\($0))" } ?? ""), size: 12, secondary: true))
@@ -56,7 +56,7 @@ final class AboutWindowController: NSWindowController {
         stack.addArrangedSubview(buttons)
         stack.setCustomSpacing(20, after: buttons)
         stack.addArrangedSubview(label(L("text.free.and.open.source.mit.license.1d282604"), size: 11, secondary: true))
-        stack.addArrangedSubview(label("© Binary Quest Software Pty Ltd", size: 11, secondary: true))
+        stack.addArrangedSubview(label(L("text.copyright.binary.quest.2026"), size: 11, secondary: true))
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

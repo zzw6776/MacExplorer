@@ -103,7 +103,7 @@ private final class StorageCard: NSCollectionViewItem {
         tile.onPress = onSelect
         tile.dropDestination = location.readOnly ? nil : { location.url }
         view.toolTip = location.url.path + "\n" + capacityLabel.stringValue
-        view.setAccessibilityLabel("\(location.title), \(location.detail), \(capacityLabel.stringValue)")
+        view.setAccessibilityLabel(L("text.storage.accessibility.summary", location.title, location.detail, capacityLabel.stringValue))
         view.setAccessibilityHelp(L("text.double.click.or.press.return.to.open.this.location.10210522"))
         view.needsLayout = true
     }
