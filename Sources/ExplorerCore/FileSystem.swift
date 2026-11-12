@@ -35,8 +35,22 @@ public enum FileSortKey: String, Sendable, Codable { case name, modified, kind, 
 public struct FileSort: Sendable, Equatable, Codable {
     public var key: FileSortKey
     public var ascending: Bool
-    public init(key: FileSortKey = .name, ascending: Bool = true) {
-        self.key = key; self.ascending = ascending
+    public var foldersFirst: Bool
+    public init(key: FileSortKey = .name, ascending: Bool = true, foldersFirst: Bool = true) {
+        self.key = key; self.ascending = ascending; self.foldersFirst = foldersFirst
+    }
+    private enum CodingKeys: String, CodingKey { case key, ascending, foldersFirst }
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        key = try values.decode(FileSortKey.self, forKey: .key)
+        ascending = try values.decode(Bool.self, forKey: .ascending)
+        foldersFirst = try values.decodeIfPresent(Bool.self, forKey: .foldersFirst) ?? true
+    }
+    public func encode(to encoder: Encoder) throws {
+        var values = encoder.container(keyedBy: CodingKeys.self)
+        try values.encode(key, forKey: .key)
+        try values.encode(ascending, forKey: .ascending)
+        try values.encode(foldersFirst, forKey: .foldersFirst)
     }
 
     public func apply(to items: [FileItem], query: String = "", showHidden: Bool = false) -> [FileItem] {
@@ -44,8 +58,7 @@ public struct FileSort: Sendable, Equatable, Codable {
             (showHidden || !$0.isHidden) && (query.isEmpty || $0.name.localizedStandardContains(query))
         }
         return visible.sorted { a, b in
-            // Folders stay first, even when descending.
-            if a.isNavigable != b.isNavigable { return a.isNavigable }
+            if foldersFirst, a.isNavigable != b.isNavigable { return a.isNavigable }
             let result: ComparisonResult
             switch key {
             case .name: result = a.name.localizedStandardCompare(b.name)

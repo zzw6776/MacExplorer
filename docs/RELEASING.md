@@ -103,7 +103,7 @@ App and DMG ticket stapling and validation automatically retry transient Apple t
 
 For an existing feed, first run `python3 scripts/release/publish.py prepare build/release-state` with R2 credentials in the AWS CLI environment, and set `PREVIOUS_APPCAST` to `build/release-state/previous-appcast.xml`. CI always does this, preserving previous update entries. A separate credential Keychain can be selected with `NOTARY_KEYCHAIN`.
 
-Regular `zsh scripts/build.sh` builds an ad-hoc signed development app with updates disabled. `--universal` includes both architectures; `--release` enables updates and requires a Developer ID identity. The demo app also keeps updates disabled.
+Regular `zsh scripts/build.sh` builds a development app signed with the fixed local identity, with updates disabled. `--universal` includes both architectures; `--release` enables updates and requires a Developer ID identity. PR checks explicitly set `EXPLORER_LOCAL_SIGNING_IDENTITY=-` for ad-hoc signing and do not upload an installer. `zsh scripts/dev-dmg.sh --universal` creates a self-signed development DMG without notarization. The demo app also keeps updates disabled.
 
 ## Publish a release
 

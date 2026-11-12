@@ -28,7 +28,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "选择另一个文件夹或检查其访问权限。"
+            "value": "\n选择另一个文件夹或检查其访问权限。"
           }
         }
       }
@@ -44,7 +44,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "原始目的地：%@"
+            "value": "\n原目标位置：%@"
           }
         }
       }
@@ -60,7 +60,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "原始出处：%@"
+            "value": "\n原位置：%@"
           }
         }
       }
@@ -156,7 +156,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "您之前的快捷方式仍然有效。"
+            "value": " 之前的快捷键仍然有效。"
           }
         }
       }
@@ -188,7 +188,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "· %d 已选择"
+            "value": "· 已选择 %d 项"
           }
         }
       }
@@ -316,7 +316,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ 原始目的地仍为 %@。"
+            "value": "%@ 原目标位置仍在 %@。"
           }
         }
       }
@@ -444,7 +444,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "自记录此操作以来，%@ 已更改。 Explorer 保持原样。"
+            "value": "记录此操作后，%@ 已发生变化。Explorer 未对其作任何修改。"
           }
         }
       }
@@ -476,7 +476,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ 选项卡"
+            "value": "%@ 标签页"
           }
         }
       }
@@ -492,7 +492,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ 选项卡，已选择"
+            "value": "%@ 标签页，已选中"
           }
         }
       }
@@ -812,7 +812,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "在“系统设置”→“隐私和安全”→“自动化”中允许 Explorer 控制 Finder，然后再次尝试“属性”。"
+            "value": "请在“系统设置”→“隐私与安全性”→“自动化”中允许 Explorer 控制 Finder，然后再次尝试打开“属性”。"
           }
         }
       }
@@ -828,7 +828,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "撤消所需的项目丢失：%@"
+            "value": "用于撤销的项目已丢失：%@"
           }
         }
       }
@@ -1100,7 +1100,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "已取消 · 已完成的项目可以撤消"
+            "value": "已取消 · 已完成的项目仍可撤销"
           }
         }
       }
@@ -1244,7 +1244,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "选择所选项目之外的目的地。"
+            "value": "请选择所选项目之外的目标位置。"
           }
         }
       }
@@ -1276,7 +1276,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "选择一个文件夹..."
+            "value": "选择文件夹…"
           }
         }
       }
@@ -1340,7 +1340,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "选择Explorer右键菜单使用的应用程序。"
+            "value": "选择 Explorer 右键菜单使用的应用程序。"
           }
         }
       }
@@ -1372,7 +1372,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "选择为提取的文件创建“%@”文件夹的位置。"
+            "value": "请选择用于存放解压文件的“%@”文件夹位置。"
           }
         }
       }
@@ -1436,7 +1436,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "单击快捷方式以记录新组合。启用后，它优先于其他应用程序中的相同快捷方式。"
+            "value": "点击快捷键以录入新的组合。启用后，它优先于其他应用中的相同快捷键。"
           }
         }
       }
@@ -1452,7 +1452,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "关闭 %@ 选项卡"
+            "value": "关闭 %@ 标签页"
           }
         }
       }
@@ -1468,7 +1468,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "关闭选项卡"
+            "value": "关闭标签页"
           }
         }
       }
@@ -1516,7 +1516,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "折叠 %@ 组，%d 项目"
+            "value": "折叠 %@ 组，%d 项"
           }
         }
       }
@@ -1676,7 +1676,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "将选择复制到其他窗格 (⌃⇧C)"
+            "value": "将所选项目复制到另一窗格（⌃⇧C）"
           }
         }
       }
@@ -1692,7 +1692,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "复制到其他窗格"
+            "value": "复制到另一窗格"
           }
         }
       }
@@ -1708,7 +1708,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "无法识别 %@ 的卷"
+            "value": "无法识别 %@ 所在的宗卷"
           }
         }
       }
@@ -1740,7 +1740,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "无法准备 Finder 的获取信息命令。"
+            "value": "无法准备 Finder 的“显示简介”命令。"
           }
         }
       }
@@ -2284,7 +2284,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "启用全局快捷方式"
+            "value": "启用全局快捷键"
           }
         }
       }
@@ -2348,7 +2348,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "展开 %@ 组、%d 项目"
+            "value": "展开 %@ 组，%d 项"
           }
         }
       }
@@ -2428,7 +2428,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Explorer 必须正在运行。关闭所有浏览器窗口可使快捷方式保持可用；退出 Explorer 会禁用它，直到下次启动为止。在“常规”中启用“登录时打开 Explorer”以使其在登录后可用。"
+            "value": "Explorer 必须保持运行。关闭所有浏览窗口后，快捷键仍然可用；退出 Explorer 后，快捷键将在下次启动前失效。可在“通用”中启用“登录时打开 Explorer”，以便登录后使用。"
           }
         }
       }
@@ -2748,7 +2748,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Finder 无法打开此选择的“获取信息”。"
+            "value": "Finder 无法为所选项目打开“显示简介”。"
           }
         }
       }
@@ -3004,7 +3004,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "未来"
+            "value": "将来"
           }
         }
       }
@@ -3052,7 +3052,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "全局快捷方式已关闭。"
+            "value": "全局快捷键已关闭。"
           }
         }
       }
@@ -3228,7 +3228,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "海量 (1–4 GB)"
+            "value": "超大（1–4 GB）"
           }
         }
       }
@@ -3436,7 +3436,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "正在加载 %@..."
+            "value": "正在加载 %@…"
           }
         }
       }
@@ -3628,7 +3628,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "向左移动选项卡"
+            "value": "向左移动标签页"
           }
         }
       }
@@ -3644,7 +3644,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "向右移动选项卡"
+            "value": "向右移动标签页"
           }
         }
       }
@@ -3660,7 +3660,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "将选项卡移至新窗口"
+            "value": "将标签页移到新窗口"
           }
         }
       }
@@ -3740,7 +3740,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "移至垃圾箱"
+            "value": "移到废纸篓"
           }
         }
       }
@@ -3756,7 +3756,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "移至垃圾箱（删除或 ⌘Backspace）"
+            "value": "移到废纸篓（Delete 或 ⌘Backspace）"
           }
         }
       }
@@ -3980,7 +3980,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "下一个选项卡"
+            "value": "下一个标签页"
           }
         }
       }
@@ -4188,7 +4188,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "打开包含的文件夹"
+            "value": "打开所在文件夹"
           }
         }
       }
@@ -4348,7 +4348,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "打开包含文件夹并选择 %@"
+            "value": "打开所在文件夹并选中 %@"
           }
         }
       }
@@ -4364,7 +4364,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "打开包含 %@ 的文件夹"
+            "value": "打开 %@ 所在的文件夹"
           }
         }
       }
@@ -4412,7 +4412,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "在新选项卡中打开"
+            "value": "在新标签页中打开"
           }
         }
       }
@@ -4892,7 +4892,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "上一个选项卡"
+            "value": "上一个标签页"
           }
         }
       }
@@ -4988,7 +4988,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "只读卷"
+            "value": "只读宗卷"
           }
         }
       }
@@ -5004,7 +5004,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "记录全局快捷方式"
+            "value": "录入全局快捷键"
           }
         }
       }
@@ -5148,7 +5148,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "替换将整个现有文件夹发送到废纸篓；文件夹不合并。"
+            "value": "替换会将整个现有文件夹移到废纸篓；不会合并文件夹。"
           }
         }
       }
@@ -5164,7 +5164,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "替换会将现有项目发送到废纸篓，以便可以通过撤消将其恢复。"
+            "value": "替换会将现有项目移到废纸篓，以便通过撤销恢复。"
           }
         }
       }
@@ -5564,7 +5564,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "快捷操作"
+            "value": "快捷键操作"
           }
         }
       }
@@ -5644,7 +5644,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "显示隐藏文件（⇧⌘。）"
+            "value": "显示隐藏文件（⇧⌘.）"
           }
         }
       }
@@ -6012,7 +6012,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "快捷方式不可用。选择其他组合或将其关闭然后再打开以重试。"
+            "value": "此快捷键不可用。请选择其他组合，或将其关闭后重新开启以重试。"
           }
         }
       }
@@ -6076,7 +6076,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "这些选择仅适用于 Explorer 的终端和编辑器操作。双击并打开继续使用 macOS 文件关联。"
+            "value": "这些选择仅适用于 Explorer 的终端和编辑器操作。双击和“打开”操作仍遵循 macOS 文件关联。"
           }
         }
       }
@@ -6188,7 +6188,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "无法注册此快捷方式（%d）。它可能已经在使用中。选择其他组合。"
+            "value": "无法注册此快捷键（%d）。它可能已被占用，请选择其他组合。"
           }
         }
       }
@@ -6316,7 +6316,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "撤消"
+            "value": "撤销"
           }
         }
       }
@@ -6332,7 +6332,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "撤消 %@"
+            "value": "撤销 %@"
           }
         }
       }
@@ -6348,7 +6348,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "撤消 %@（⌘Z 或 Ctrl+Z）"
+            "value": "撤销 %@（⌘Z 或 Ctrl+Z）"
           }
         }
       }
@@ -6364,7 +6364,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "撤消（⌘Z 或 Ctrl+Z）"
+            "value": "撤销（⌘Z 或 Ctrl+Z）"
           }
         }
       }
@@ -6380,7 +6380,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "由于 %@ 被占用，撤消停止。将该项目移到一边，然后再次尝试撤消。"
+            "value": "由于 %@ 被占用，撤销已停止。请将该项目移开，然后重试撤销。"
           }
         }
       }
@@ -6604,7 +6604,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "查看和搜索默认值适用于新选项卡。现有选项卡保持其布局； “视图”菜单还更新了文件夹视图默认值。"
+            "value": "显示和搜索默认设置适用于新标签页。现有标签页保持当前布局；“显示”菜单也会更新默认文件夹视图。"
           }
         }
       }
@@ -6759,6 +6759,132 @@
       "localizations": {
         "en": { "stringUnit": { "state": "translated", "value": "%@ — Explorer" } },
         "zh-Hans": { "stringUnit": { "state": "translated", "value": "%@ — Explorer" } }
+      }
+    },
+    "text.projects.04e2a972": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Projects" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "项目" } }
+      }
+    },
+    "text.studio.ssd.dccd7888": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Studio SSD" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "Studio SSD" } }
+      }
+    },
+    "text.shared.projects.0b47e3bf": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Shared Projects" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "共享项目" } }
+      }
+    },
+    "text.google.drive.915ef4ba": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Google Drive" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "Google 云端硬盘" } }
+      }
+    },
+    "text.my.drive.428d9cf8": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "My Drive" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "我的云端硬盘" } }
+      }
+    },
+    "text.shared.drives.bae61950": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Shared drives" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "共享云端硬盘" } }
+      }
+    },
+    "text.onedrive.8a7a54d3": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "OneDrive" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "OneDrive" } }
+      }
+    },
+    "text.dropbox.4750d0a1": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Dropbox" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "Dropbox" } }
+      }
+    },
+    "text.sample.workspace.01822ab0": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Sample workspace" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "示例工作区" } }
+      }
+    },
+    "text.reading.storage.9471dedd": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Reading storage…" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "正在读取存储信息…" } }
+      }
+    },
+    "text.other.computers.44ed2032": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Other computers" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "其他计算机" } }
+      }
+    },
+    "text.computers.680cb3c6": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Computers" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "计算机" } }
+      }
+    },
+    "text.folders.first.6f94fb69": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Folders first" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "文件夹置顶" } }
+      }
+    },
+    "text.keep.sidebar.unchanged.when.navigating.the.right.pane.caaa6a5a": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Keep sidebar unchanged when browsing folders in the file pane" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "在文件区浏览文件夹时保持左侧导航栏不变" } }
+      }
+    },
+    "text.permissions.15d56f1d": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Permissions" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "权限" } }
+      }
+    },
+    "text.manage.macos.access.to.protected.files.4b8ecbd0": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Manage macOS access to protected files." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "管理 macOS 受保护文件的访问权限。" } }
+      }
+    },
+    "text.full.disk.access.permission.6ecbf10a": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Full Disk Access Permission" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "完全磁盘访问权限" } }
+      }
+    },
+    "text.full.disk.access.description.c9a46dc5": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Allows Explorer to access protected folders without requesting access to each location separately." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "允许 Explorer 访问受保护的文件夹，无需分别请求每个位置的访问权限。" } }
+      }
+    },
+    "text.open.full.disk.access.settings.f735ba01": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Open Full Disk Access Settings" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "打开完全磁盘访问设置" } }
+      }
+    },
+    "text.full.disk.access.granted.fce88a67": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Full Disk Access is granted." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "已授予完全磁盘访问权限。" } }
+      }
+    },
+    "text.full.disk.access.not.granted.73348afd": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Full Disk Access is not granted." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "尚未授予完全磁盘访问权限。" } }
       }
     }
   },

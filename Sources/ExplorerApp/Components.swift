@@ -27,11 +27,11 @@ enum Palette {
     static func makeFolderIcon(tint: NSColor? = nil) -> NSImage {
       NSImage(size: NSSize(width: 64, height: 52), flipped: false) { _ in
         let back = NSBezierPath(roundedRect: NSRect(x: 3, y: 6, width: 58, height: 35), xRadius: 4, yRadius: 4)
-        (tint?.blended(withFraction: 0.22, of: .black) ?? NSColor(calibratedRed: 0.90, green: 0.56, blue: 0.08, alpha: 1)).setFill(); back.fill()
+        (tint?.blended(withFraction: 0.22, of: .black) ?? NSColor(calibratedRed: 0.88, green: 0.64, blue: 0.20, alpha: 1)).setFill(); back.fill()
         NSBezierPath(roundedRect: NSRect(x: 3, y: 30, width: 26, height: 17), xRadius: 4, yRadius: 4).fill()
         NSColor(calibratedWhite: 1, alpha: 0.92).setFill(); NSRect(x: 7, y: 29, width: 50, height: 7).fill()
         let front = NSBezierPath(roundedRect: NSRect(x: 3, y: 5, width: 58, height: 31), xRadius: 4, yRadius: 4)
-        NSGradient(starting: tint?.blended(withFraction: 0.25, of: .white) ?? NSColor(calibratedRed: 1, green: 0.83, blue: 0.25, alpha: 1), ending: tint ?? NSColor(calibratedRed: 0.98, green: 0.68, blue: 0.08, alpha: 1))?.draw(in: front, angle: -90)
+        NSGradient(starting: tint?.blended(withFraction: 0.25, of: .white) ?? NSColor(calibratedRed: 1, green: 0.85, blue: 0.42, alpha: 1), ending: tint ?? NSColor(calibratedRed: 0.97, green: 0.73, blue: 0.22, alpha: 1))?.draw(in: front, angle: -90)
         return true
       }
     }
@@ -283,6 +283,7 @@ final class PathBar: Surface, NSTextFieldDelegate {
     var onCommit: ((String) -> Void)?
     private let crumbs = NSStackView()
     private let field = NSTextField()
+    private var currentCrumbButton: ActionButton?
     private var url = FileManager.default.homeDirectoryForCurrentUser
     private var editing = false
     private var searchResults: String?
@@ -301,15 +302,21 @@ final class PathBar: Surface, NSTextFieldDelegate {
             crumbs.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 7), crumbs.trailingAnchor.constraint(lessThanOrEqualTo: edit.leadingAnchor), crumbs.centerYAnchor.constraint(equalTo: centerYAnchor),
             field.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12), field.trailingAnchor.constraint(equalTo: edit.leadingAnchor, constant: -4), field.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
-        let click = NSClickGestureRecognizer(target: self, action: #selector(editClicked)); click.numberOfClicksRequired = 2
-        addGestureRecognizer(click)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    @objc private func editClicked() { beginEditing() }
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        guard let hit = super.hitTest(point) else { return nil }
+        guard !editing else { return hit }
+        if let currentCrumbButton,
+           hit === currentCrumbButton || hit.isDescendant(of: currentCrumbButton) { return self }
+        return hit
+    }
+    override func mouseDown(with event: NSEvent) { beginEditing() }
     func update(_ url: URL, searchResults: String? = nil) {
         self.searchResults = searchResults
         self.url = url; field.stringValue = BrowserLocation.isThisMac(url) ? L("text.this.mac.79a4aefc") : url.path
         editing = false; field.isHidden = true; crumbs.isHidden = false
+        currentCrumbButton = nil
         crumbs.arrangedSubviews.forEach { crumbs.removeArrangedSubview($0); $0.removeFromSuperview() }
         if let searchResults {
             let icon = NSImageView(image: Palette.symbol("magnifyingglass") ?? NSImage())
@@ -322,7 +329,8 @@ final class PathBar: Surface, NSTextFieldDelegate {
         }
         crumbs.spacing = 0; toolTip = url.path
         if BrowserLocation.isThisMac(url) {
-            crumbs.addArrangedSubview(ActionButton(L("text.this.mac.79a4aefc"), symbol: "desktopcomputer", tooltip: L("text.devices.drives.and.network.locations.84ccf019")) { [weak self] in self?.onNavigate?(BrowserLocation.thisMac) })
+            let button = ActionButton(L("text.this.mac.79a4aefc"), symbol: "desktopcomputer", tooltip: L("text.devices.drives.and.network.locations.84ccf019")) { [weak self] in self?.onNavigate?(BrowserLocation.thisMac) }
+            currentCrumbButton = button; crumbs.addArrangedSubview(button)
             return
         }
         var chain: [URL] = []; var current = url.standardizedFileURL
@@ -340,11 +348,20 @@ final class PathBar: Surface, NSTextFieldDelegate {
             let button = ActionButton(name, tooltip: component.path, maximumWidth: 140) { [weak self] in self?.onNavigate?(component) }
             button.lineBreakMode = .byTruncatingMiddle
             crumbs.addArrangedSubview(button)
+            if component == chain.last { currentCrumbButton = button }
         }
     }
     func beginEditing() {
         editing = true; crumbs.isHidden = true; field.isHidden = false
-        field.stringValue = BrowserLocation.isThisMac(url) ? L("text.this.mac.79a4aefc") : url.path; window?.makeFirstResponder(field); field.selectText(nil)
+        field.stringValue = BrowserLocation.isThisMac(url) ? L("text.this.mac.79a4aefc") : url.path
+        // A button or path-segment click finishes after its action runs and can
+        // reclaim first responder. Focus on the next run-loop turn so editing
+        // remains active after the initiating click completes.
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.editing else { return }
+            self.window?.makeFirstResponder(self.field)
+            self.field.selectText(nil)
+        }
     }
     @objc private func commit() {
         let text = field.stringValue; window?.makeFirstResponder(nil)
@@ -355,9 +372,9 @@ final class PathBar: Surface, NSTextFieldDelegate {
         return false
     }
     func controlTextDidEndEditing(_ obj: Notification) {
-        // Keep the typed path until the commit action has handled Return.
-        if let movement = obj.userInfo?["NSTextMovement"] as? Int, movement == NSReturnTextMovement { return }
-        if editing { update(url, searchResults: searchResults) }
+        // A click that starts editing may briefly move focus through the
+        // initiating button. Keep the text field open until Return commits or
+        // Escape explicitly cancels it.
     }
 }
 

@@ -4,6 +4,27 @@ PROJECT_ROOT="${0:A:h:h}"
 cd "$PROJECT_ROOT"
 export CLANG_MODULE_CACHE_PATH="$PROJECT_ROOT/.build/clang-cache"
 export SWIFTPM_MODULECACHE_OVERRIDE="$PROJECT_ROOT/.build/module-cache"
+
+# Some macOS Command Line Tools releases ship a current ManifestAPI library
+# alongside a stale private PackageDescription interface. SwiftPM prefers that
+# private interface and fails before it can build the package. Use a project-
+# local copy without the stale interface when this exact mismatch is present.
+SWIFT_EXECUTABLE=$(xcrun --find swift)
+MANIFEST_API="${SWIFT_EXECUTABLE:h:h}/lib/swift/pm/ManifestAPI"
+PRIVATE_INTERFACE="$MANIFEST_API/PackageDescription.swiftmodule/arm64-apple-macos.private.swiftinterface"
+PUBLIC_INTERFACE="$MANIFEST_API/PackageDescription.swiftmodule/arm64-apple-macos.swiftinterface"
+if [[ -f "$PRIVATE_INTERFACE" && -f "$PUBLIC_INTERFACE" ]] \
+   && ! grep -q 'swiftLanguageModes' "$PRIVATE_INTERFACE" \
+   && grep -q 'swiftLanguageModes' "$PUBLIC_INTERFACE"; then
+  FIXED_SWIFTPM_LIBS="$PROJECT_ROOT/.build/fixed-swiftpm-libs"
+  if [[ ! -f "$FIXED_SWIFTPM_LIBS/ManifestAPI/libPackageDescription.dylib" ]]; then
+    mkdir -p "$FIXED_SWIFTPM_LIBS/ManifestAPI/stale-private-interfaces"
+    cp -R "$MANIFEST_API/." "$FIXED_SWIFTPM_LIBS/ManifestAPI/"
+    mv "$FIXED_SWIFTPM_LIBS"/ManifestAPI/PackageDescription.swiftmodule/*private.swiftinterface \
+       "$FIXED_SWIFTPM_LIBS/ManifestAPI/stale-private-interfaces/"
+  fi
+  export SWIFTPM_CUSTOM_LIBS_DIR="$FIXED_SWIFTPM_LIBS"
+fi
 RELEASE_BUILD=0
 UNIVERSAL_BUILD=0
 for arg in "$@"; do
@@ -16,7 +37,7 @@ done
 if (( RELEASE_BUILD )); then
   : "${DEVELOPER_ID_APPLICATION:?Set DEVELOPER_ID_APPLICATION to your Developer ID Application identity}"
 fi
-BUILD_ARGS=(-c release -debug-info-format none --disable-sandbox --cache-path "$PROJECT_ROOT/.build/cache" --config-path "$PROJECT_ROOT/.build/config" --security-path "$PROJECT_ROOT/.build/security")
+BUILD_ARGS=(-c release --build-system native -debug-info-format none --disable-sandbox --cache-path "$PROJECT_ROOT/.build/cache" --config-path "$PROJECT_ROOT/.build/config" --security-path "$PROJECT_ROOT/.build/security")
 if (( UNIVERSAL_BUILD )); then BUILD_ARGS+=(--arch arm64 --arch x86_64); fi
 swift build "${BUILD_ARGS[@]}"
 BIN_PATH=$(swift build "${BUILD_ARGS[@]}" --show-bin-path)
@@ -45,7 +66,15 @@ if (( RELEASE_BUILD )); then
   zsh scripts/sign-app.sh "$APP_STAGE" "$DEVELOPER_ID_APPLICATION"
   APP_PATH="$PROJECT_ROOT/build/release/Explorer.app"
 else
-  zsh scripts/sign-app.sh "$APP_STAGE" -
+  plutil -replace ExplorerDevelopmentBuild -bool YES "$APP_STAGE/Contents/Info.plist"
+  LOCAL_SIGNING_IDENTITY="${EXPLORER_LOCAL_SIGNING_IDENTITY:-Mac Development: Explorer Self-Signed}"
+  if [[ "$LOCAL_SIGNING_IDENTITY" == '-' ]] || security find-identity -v -p codesigning | grep -Fq "\"$LOCAL_SIGNING_IDENTITY\""; then
+    zsh scripts/sign-app.sh "$APP_STAGE" "$LOCAL_SIGNING_IDENTITY"
+  else
+    print -u2 "Missing stable signing identity: $LOCAL_SIGNING_IDENTITY"
+    print -u2 'Run: zsh scripts/create-local-signing-identity.sh'
+    exit 1
+  fi
   APP_PATH="$PROJECT_ROOT/build/Explorer.app"
 fi
 if (( UNIVERSAL_BUILD )); then

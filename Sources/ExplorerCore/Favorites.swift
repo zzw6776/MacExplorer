@@ -7,7 +7,7 @@ public struct Favorite: Identifiable, Codable, Equatable, Sendable {
     public var url: URL { URL(fileURLWithPath: path, isDirectory: true) }
     public init(id: UUID = UUID(), url: URL, name: String? = nil) {
         self.id = id; path = url.standardizedFileURL.path
-        self.name = name ?? (url.lastPathComponent.isEmpty ? "Macintosh HD" : url.lastPathComponent)
+        self.name = name ?? (url.lastPathComponent.isEmpty ? L("text.macintosh.hd.a9fdbf3a") : url.lastPathComponent)
     }
 }
 

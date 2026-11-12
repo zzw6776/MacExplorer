@@ -69,6 +69,17 @@ final class AppPreferences {
         get { FileViewMode(rawValue: defaults.string(forKey: "explorer.viewMode") ?? "") ?? .details }
         set { set(newValue.rawValue, for: "explorer.viewMode") }
     }
+    var presentation: TabPresentation {
+        get {
+            guard let data = defaults.data(forKey: "explorer.presentation.v1"),
+                  let value = try? JSONDecoder().decode(TabPresentation.self, from: data) else { return TabPresentation() }
+            return value
+        }
+        set {
+            guard let data = try? JSONEncoder().encode(newValue) else { return }
+            set(data, for: "explorer.presentation.v1")
+        }
+    }
     var searchScope: SearchScope {
         get { SearchScope(rawValue: defaults.string(forKey: "explorer.searchScope") ?? "") ?? .subfolders }
         set { set(newValue.rawValue, for: "explorer.searchScope") }
@@ -76,6 +87,10 @@ final class AppPreferences {
     var showHidden: Bool {
         get { defaults.bool(forKey: "explorer.showHidden") }
         set { set(newValue, for: "explorer.showHidden") }
+    }
+    var keepSidebarUnchangedWhileBrowsing: Bool {
+        get { defaults.object(forKey: "explorer.sidebar.keepFixedForRightPane") as? Bool ?? true }
+        set { set(newValue, for: "explorer.sidebar.keepFixedForRightPane") }
     }
     var terminalApplication: ApplicationChoice? {
         get { application(for: "explorer.applications.terminal") }

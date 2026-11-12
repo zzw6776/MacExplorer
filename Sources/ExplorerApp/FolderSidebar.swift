@@ -94,14 +94,9 @@ final class FolderSidebar: NSViewController, NSOutlineViewDataSource, NSOutlineV
                  FolderNode(title: L("text.this.mac.79a4aefc"), url: BrowserLocation.thisMac, symbol: "desktopcomputer", children: devices)]
         if !networks.isEmpty { roots.append(FolderNode(title: L("text.network.locations.41db6c2c"), url: nil, section: true, children: networks)) }
         syncing = true; outline.reloadData(); roots.forEach { outline.expandItem($0) }; syncing = false
-        let colorGeneration = generation
-        let colorNodes = roots.flatMap { $0.children ?? [] }.filter { $0.url?.isFileURL == true }
-        let urls = colorNodes.compactMap(\.url)
-        Task { [weak self] in
-            let summaries = await Task.detached(priority: .utility) { urls.map { FinderColors.summary(at: $0) } }.value
-            guard let self, self.generation == colorGeneration else { return }
-            for (node, summary) in zip(colorNodes, summaries) { node.finderColors = summary; self.outline.reloadItem(node) }
-        }
+        // Do not touch pinned folders merely to decorate the sidebar. Reading
+        // Finder metadata from Desktop, Documents, or Downloads at launch
+        // triggers macOS privacy prompts even when the user never opens them.
     }
 
     func sync(to url: URL) {

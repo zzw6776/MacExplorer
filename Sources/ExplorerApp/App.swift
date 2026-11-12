@@ -42,6 +42,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuItemValidation {
         do { try globalShortcut.apply(AppPreferences.shared.shortcutEnabled ? AppPreferences.shared.shortcut : nil) }
         catch { NSLog("Explorer shortcut unavailable: %@", error.localizedDescription) }
         ready = true
+        let requestFullDiskAccess = FullDiskAccessPermission.shouldRequestOnLaunch()
         let args = CommandLine.arguments
         if DemoData.active { newWindow(session: DemoData.session) }
         else if let index = args.firstIndex(of: "--folder"), index + 1 < args.count {
@@ -49,10 +50,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuItemValidation {
         } else if !pendingURLs.isEmpty {
             newWindow(urls: pendingURLs)
             pendingURLs = []
+        } else if requestFullDiskAccess {
+            let thisMac = BrowserLocation.stored(BrowserLocation.thisMac)
+            newWindow(session: WorkspaceSession(left: PaneSession(paths: [thisMac])))
         } else {
             newWindow()
         }
         NSApp.activate(ignoringOtherApps: true)
+        if requestFullDiskAccess {
+            DispatchQueue.main.async { FullDiskAccessPermission.request() }
+        }
         updates.start()
     }
 
@@ -122,6 +129,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuItemValidation {
         for controller in windows {
             controller.workspace.left.applyHiddenPreference()
             controller.workspace.right?.applyHiddenPreference()
+            controller.workspace.applySidebarPreference()
         }
     }
 
@@ -312,6 +320,13 @@ final class ExplorerWindow: NSWindow {
     weak var workspace: WorkspaceViewController?
     weak var tabStripView: NSView?
     private weak var pressedTab: BrowserTabView?
+    static func historyDirection(forMouseButton buttonNumber: Int) -> Int? {
+        switch buttonNumber {
+        case 3: return -1
+        case 4: return 1
+        default: return nil
+        }
+    }
     func alignWindowControls(with tabView: NSView) {
         guard !styleMask.contains(.fullScreen), tabView.window === self, tabView.bounds.height > 0 else { return }
         // Keep the real AppKit controls, horizontal spacing and native actions.
@@ -334,6 +349,12 @@ final class ExplorerWindow: NSWindow {
         return contentView.hitTest(contentView.superview?.convert(location, from: nil) ?? location)
     }
     override func sendEvent(_ event: NSEvent) {
+        if attachedSheet == nil, event.type == .otherMouseDown,
+           let direction = Self.historyDirection(forMouseButton: event.buttonNumber) {
+            workspace?.activatePane(containing: contentHit(at: event.locationInWindow))
+            if direction < 0 { browser?.goBack() } else { browser?.goForward() }
+            return
+        }
         // Keep the tab's press/drag sequence together. Its native titlebar
         // accessory excludes the tab area from Window Server dragging.
         if attachedSheet == nil {
@@ -370,6 +391,25 @@ final class ExplorerWindow: NSWindow {
         return result
     }
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        let shortcutFlags = event.modifierFlags.intersection([.command, .option, .control, .shift])
+        let shortcutCharacter = event.charactersIgnoringModifiers?.lowercased()
+        if attachedSheet == nil, shortcutCharacter == "z", let editor = firstResponder as? RenameTextView {
+            if shortcutFlags == [.command, .shift] {
+                _ = editor.performTextRedo()
+                return true
+            }
+            if shortcutFlags == .command || shortcutFlags == .control {
+                _ = editor.performTextUndo()
+                return true
+            }
+        }
+        if attachedSheet == nil, shortcutFlags == .command,
+           shortcutCharacter == "z",
+           !(firstResponder is NSTextView),
+           browser?.canPerformFileAction(.undo) == true {
+            browser?.performFileAction(.undo)
+            return true
+        }
         if attachedSheet == nil, browser?.handleFileShortcut(event) == true { return true }
         if attachedSheet != nil { return super.performKeyEquivalent(with: event) }
         // Arrow and function keys also carry .numericPad/.function on macOS.

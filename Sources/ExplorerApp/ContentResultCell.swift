@@ -7,7 +7,7 @@ final class ContentResultCell: NSTableCellView {
     static let identifier = NSUserInterfaceItemIdentifier("ContentResultCell")
     static let compactWidth: CGFloat = 720
     static func rowHeight(for width: CGFloat) -> CGFloat { width < compactWidth ? 82 : 62 }
-    let nameLabel = NSTextField(labelWithString: "")
+    let nameLabel = InlineRenameField()
     let modifiedLabel = NSTextField(labelWithString: "")
     let locationLabel = FolderLocationLink()
     let sizeLabel = NSTextField(labelWithString: "")

@@ -87,9 +87,16 @@ final class FileSystemTests: XCTestCase {
         ]
         XCTAssertEqual(FileSort().apply(to: items).map(\.name), ["Folder", "Demo.app", "file2.txt", "file10.txt"])
         XCTAssertEqual(FileSort(ascending: false).apply(to: items).first?.name, "Folder")
+        XCTAssertEqual(FileSort(foldersFirst: false).apply(to: items).map(\.name), ["Demo.app", "file2.txt", "file10.txt", "Folder"])
         XCTAssertEqual(FileSort().apply(to: items, query: "FILE2").map(\.name), ["file2.txt"])
         XCTAssertFalse(items.last!.isNavigable)
         XCTAssertEqual(FileSort(key: .size, ascending: false).apply(to: items).map(\.name), ["Folder", "file10.txt", "file2.txt", "Demo.app"])
+    }
+    func testOlderSortSettingsKeepFoldersFirst() throws {
+        let data = Data(#"{"key":"size","ascending":false}"#.utf8)
+        let sort = try JSONDecoder().decode(FileSort.self, from: data)
+        XCTAssertEqual(sort.key, .size); XCTAssertFalse(sort.ascending); XCTAssertTrue(sort.foldersFirst)
+        XCTAssertEqual(try JSONDecoder().decode(FileSort.self, from: JSONEncoder().encode(FileSort(foldersFirst: false))).foldersFirst, false)
     }
     func testLargeFolderEnumerationAndSort() throws {
         let root = try fixture()

@@ -9,7 +9,7 @@ final class BrowserTab {
     var items: [FileItem] = []
     var visible: [FileItem] = []
     var groups: [FileGroup] = []
-    var grouping = FileGrouping()
+    var grouping: FileGrouping
     var collapsedGroups: Set<String> = []
     var displayIndex = FileDisplayIndex()
     func clearVisible() { visible = []; groups = []; displayIndex = FileDisplayIndex() }
@@ -26,7 +26,7 @@ final class BrowserTab {
     var isRecursiveSearch: Bool { hasSearchQuery && searchScope == .subfolders }
     var searchViewMode = FileViewMode.content
     var selectionKey: String { history.current.path + (hasSearchQuery ? "\nsearch:" + searchScope.rawValue + ":" + query : "") }
-    var sort = FileSort()
+    var sort: FileSort
     var viewMode = AppPreferences.shared.viewMode
     var selections: [String: Set<String>] = [:]
     var pendingSelections: [String: Set<String>] = [:]
@@ -38,7 +38,12 @@ final class BrowserTab {
     var sortTask: Task<Void, Never>?
     var generation = UUID()
     var sortGeneration = UUID()
-    init(url: URL) { history = NavigationHistory(url) }
+    init(url: URL) {
+        history = NavigationHistory(url)
+        let presentation = AppPreferences.shared.presentation
+        sort = presentation.sort
+        grouping = presentation.grouping
+    }
 }
 
 @MainActor
@@ -613,7 +618,7 @@ final class BrowserViewController: NSViewController, NSTableViewDataSource, NSTa
         if tab.loading { progress.startAnimation(nil); status.stringValue = L("text.loading.argument.496fd8fa", title(for: tab.history.current)) }
         else {
             progress.stopAnimation(nil)
-            let count = tab.visible.count.formatted()
+            let count = tab.visible.count
             let selected = selectedItems
             status.stringValue = tab.visible.count == 1 ? L("text.argument.item.b138a0bb", count) : L("text.argument.items.cb36e272", count)
             if !tab.query.isEmpty { status.stringValue += L("text.matching.argument.4bec325e", tab.query) }
@@ -683,7 +688,10 @@ final class BrowserViewController: NSViewController, NSTableViewDataSource, NSTa
     }
     func makeCell(_ identifier: NSUserInterfaceItemIdentifier) -> NSTableCellView {
         let cell = NSTableCellView(); cell.identifier = identifier
-        let label = identifier.rawValue == "location" ? FolderLocationLink() : NSTextField(labelWithString: "")
+        let label: NSTextField
+        if identifier.rawValue == "location" { label = FolderLocationLink() }
+        else if identifier.rawValue == "name" { label = InlineRenameField() }
+        else { label = NSTextField(labelWithString: "") }
         label.font = .systemFont(ofSize: 12); label.lineBreakMode = .byTruncatingMiddle
         label.textColor = identifier.rawValue == "name" ? .labelColor : .secondaryLabelColor
         label.translatesAutoresizingMaskIntoConstraints = false; cell.textField = label; cell.addSubview(label)
@@ -701,7 +709,7 @@ final class BrowserViewController: NSViewController, NSTableViewDataSource, NSTa
     func tableView(_ tableView: NSTableView, sortDescriptorsDidChange oldDescriptors: [NSSortDescriptor]) {
         guard isViewLoaded, !suppressSelection, let descriptor = tableView.sortDescriptors.first,
               let key = descriptor.key.flatMap(FileSortKey.init(rawValue:)) else { return }
-        rememberSelection(); tab.sort = FileSort(key: key, ascending: descriptor.ascending); updateSortPresentation(); applyView(); saveSession()
+        rememberSelection(); tab.sort.key = key; tab.sort.ascending = descriptor.ascending; updateSortPresentation(); applyView(); saveSession()
     }
     func searchQueryChanged() {
         if tab.isThisMac { tab.query = search.stringValue; updateSearchControls(); storageChanged(); return }
@@ -845,7 +853,7 @@ final class BrowserViewController: NSViewController, NSTableViewDataSource, NSTa
         case .trash: operations.run(.trash(urls), window: window)
         case .compress:
             let parent = folderDestination ?? urls[0].deletingLastPathComponent()
-            let name = urls.count == 1 ? urls[0].lastPathComponent + ".zip" : "Archive.zip"
+            let name = urls.count == 1 ? urls[0].lastPathComponent + ".zip" : L("text.archive.66f4804e") + ".zip"
             operations.run(.compress(urls, to: parent.appendingPathComponent(name)), window: window)
         case .extract:
             guard let archive = urls.first else { return }
@@ -864,9 +872,7 @@ final class BrowserViewController: NSViewController, NSTableViewDataSource, NSTa
             FileProperties.show(targets, window: window)
         case .rename:
             guard let item = selectedItems.first else { return }
-            operations.askName(title: L("text.rename.3064d79a"), initial: item.name, selectStem: !item.isDirectory, window: window) { [weak self] name in
-                self?.operations.run(.rename(item.url, to: name), window: window)
-            }
+            beginInlineRename(item, window: window)
         case .newFolder:
             var name = L("text.new.folder.cf28f49e"), index = 2
             let names = Set(tab.items.map { $0.name.lowercased() })
@@ -882,6 +888,24 @@ final class BrowserViewController: NSViewController, NSTableViewDataSource, NSTa
                 if response == .OK, let target = panel.url { self?.operations.run(.move(urls, to: target), window: window) }
             }
         }
+    }
+    private func beginInlineRename(_ item: FileItem, window: NSWindow) {
+        let submit: (String) -> Void = { [weak self, weak window] name in
+            guard let self, let window, name != item.name else { return }
+            self.operations.run(.rename(item.url, to: name), window: window)
+        }
+        if viewMode.usesTable {
+            let row = table.selectedRow
+            let column = table.column(withIdentifier: NSUserInterfaceItemIdentifier("name"))
+            guard row >= 0, column >= 0,
+                  let cell = table.view(atColumn: column, row: row, makeIfNecessary: true) else { return }
+            let field = (cell as? ContentResultCell)?.nameLabel ?? (cell as? NSTableCellView)?.textField as? InlineRenameField
+            field?.beginRenaming(item.name, selectStem: !item.isDirectory, submit: submit)
+            return
+        }
+        guard let indexPath = collection.selectionIndexPaths.first,
+              let cell = collection.item(at: indexPath) as? FileIconItem else { return }
+        cell.beginRenaming(item, submit: submit)
     }
     var canExtractSelection: Bool {
         selectedItems.count == 1 && selectedItems[0].url.pathExtension.lowercased() == "zip" && !selectedItems[0].isDirectory

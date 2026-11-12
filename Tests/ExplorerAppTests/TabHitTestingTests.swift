@@ -37,6 +37,15 @@ struct TabHitTestingTests {
         }
     }
 
+    @Test func addressBarAndSideButtonsUseExpectedMouseActions() {
+        let pathBar = PathBar(frame: NSRect(x: 0, y: 0, width: 500, height: 34))
+        pathBar.layoutSubtreeIfNeeded()
+        #expect(pathBar.hitTest(NSPoint(x: 450, y: 17)) === pathBar)
+        #expect(ExplorerWindow.historyDirection(forMouseButton: 3) == -1)
+        #expect(ExplorerWindow.historyDirection(forMouseButton: 4) == 1)
+        #expect(ExplorerWindow.historyDirection(forMouseButton: 2) == nil)
+    }
+
     @Test func closeButtonsAndEmptyTitlebarSpaceHaveSeparateTargets() {
         let (window, root, scroll, tabs) = fixture()
         defer { window.close() }

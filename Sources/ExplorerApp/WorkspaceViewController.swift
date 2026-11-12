@@ -226,14 +226,15 @@ final class WorkspaceViewController: NSViewController, NSSplitViewDelegate {
         // The address bar supplies the path without that main-thread filesystem IO.
     }
     func syncSidebar(from browser: BrowserViewController) {
-        guard ready, browser === activeBrowser else { return }
+        guard ready, browser === activeBrowser, !AppPreferences.shared.keepSidebarUnchangedWhileBrowsing else { return }
         if sidebar.showHidden != browser.showHidden { sidebar.showHidden = browser.showHidden; sidebar.rebuild() }
         sidebar.sync(to: browser.tab.history.current)
     }
     func refreshSidebar(from browser: BrowserViewController) {
-        guard ready, browser === activeBrowser else { return }
+        guard ready, browser === activeBrowser, !AppPreferences.shared.keepSidebarUnchangedWhileBrowsing else { return }
         sidebar.showHidden = browser.showHidden; sidebar.rebuild(); sidebar.sync(to: browser.tab.history.current)
     }
+    func applySidebarPreference() { syncSidebar(from: activeBrowser) }
     func saveSession() {
         guard ready else { return }
         SessionStore.save(WorkspaceSession(left: left.session, right: right?.session, dualPane: dualPane, activeRight: activeBrowser === right))

@@ -15,6 +15,8 @@ struct PreferencesTests {
         #expect(preferences.shortcut == .defaultShortcut)
         #expect(preferences.searchScope == .subfolders)
         #expect(preferences.appearance == .system)
+        #expect(preferences.keepSidebarUnchangedWhileBrowsing)
+        #expect(preferences.presentation == TabPresentation())
         let session = WorkspaceSession(left: PaneSession(paths: ["/tmp", "/Users"], active: 1, modes: ["details", "large"]),
                                        right: PaneSession(paths: ["/"]), dualPane: true, activeRight: true)
         #expect(preferences.openingSession(restored: session) == session)
@@ -23,6 +25,10 @@ struct PreferencesTests {
         #expect(!preferences.openingSession(restored: session).dualPane)
         preferences.appearance = .dark; preferences.searchScope = .folder; preferences.viewMode = .content
         preferences.showHidden = true; preferences.shortcutEnabled = false; preferences.shortcutOpensNewWindow = true
+        preferences.keepSidebarUnchangedWhileBrowsing = false
+        let presentation = TabPresentation(sort: FileSort(key: .size, ascending: false, foldersFirst: false),
+                                           grouping: FileGrouping(key: .kind, ascending: false))
+        preferences.presentation = presentation
         let binding = LaunchShortcut(keyCode: UInt32(kVK_ANSI_J), modifiers: NSEvent.ModifierFlags([.command, .option]).rawValue, character: "J")
         preferences.shortcut = binding
         let reloaded = AppPreferences(defaults: defaults)
@@ -34,6 +40,8 @@ struct PreferencesTests {
         #expect(reloaded.searchScope == .folder)
         #expect(reloaded.viewMode == .content)
         #expect(reloaded.showHidden)
+        #expect(!reloaded.keepSidebarUnchangedWhileBrowsing)
+        #expect(reloaded.presentation == presentation)
     }
 
     @Test func corruptedOrUnsafeBindingsFallBackToCommandE() throws {

@@ -105,6 +105,8 @@ extension BrowserViewController {
             let item = NSMenuItem(title: title, action: #selector(setSortDirection(_:)), keyEquivalent: "")
             item.target = self; item.representedObject = ascending; menu.addItem(item)
         }
+        let foldersFirst = NSMenuItem(title: L("text.folders.first.6f94fb69"), action: #selector(toggleFoldersFirst(_:)), keyEquivalent: "")
+        foldersFirst.target = self; menu.addItem(foldersFirst)
         menu.addItem(.separator())
         let group = NSMenuItem(title: L("text.group.by.956a51f6"), action: nil, keyEquivalent: ""), submenu = NSMenu()
         for key in FileGroupKey.allCases.filter({ $0 != .none }) + [.none] {
@@ -122,15 +124,18 @@ extension BrowserViewController {
     }
     @objc func setSortDirection(_ sender: NSMenuItem) {
         guard let ascending = sender.representedObject as? Bool else { return }
-        rememberSelection(); tab.sort.ascending = ascending; updateSortPresentation(); applyView(); saveSession()
+        rememberSelection(); tab.sort.ascending = ascending; savePresentationPreference(); updateSortPresentation(); applyView(); saveSession()
+    }
+    @objc func toggleFoldersFirst(_ sender: NSMenuItem) {
+        rememberSelection(); tab.sort.foldersFirst.toggle(); savePresentationPreference(); updateSortPresentation(); applyView(); saveSession()
     }
     @objc func changeGrouping(_ sender: NSMenuItem) {
         guard let raw = sender.representedObject as? String, let key = FileGroupKey(rawValue: raw) else { return }
         rememberSelection(); tab.grouping = FileGrouping(key: key); tab.collapsedGroups = []
-        tab.scrollPositions[scrollKey] = 0; updateSortPresentation(); applyView(); saveSession()
+        tab.scrollPositions[scrollKey] = 0; savePresentationPreference(); updateSortPresentation(); applyView(); saveSession()
     }
     @objc func setGroupDirection(_ sender: NSMenuItem) {
         guard let ascending = sender.representedObject as? Bool else { return }
-        rememberSelection(); tab.grouping.ascending = ascending; updateSortPresentation(); applyView(); saveSession()
+        rememberSelection(); tab.grouping.ascending = ascending; savePresentationPreference(); updateSortPresentation(); applyView(); saveSession()
     }
 }

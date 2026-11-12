@@ -9,6 +9,7 @@
   <key>CFBundleShortVersionString</key><string>0.11.3</string>
   <key>CFBundleVersion</key><string>28</string>
   <key>ExplorerUpdatesEnabled</key><false/>
+  <key>ExplorerDevelopmentBuild</key><false/>
   <key>SUFeedURL</key><string>https://downloads.bquick.io/explorer/stable/appcast.xml</string>
   <key>SUPublicEDKey</key><string>/Imo2wrUqWknjjzrPTy6t4QjHf3odT3NusmrfZeTH74=</string>
   <key>SUVerifyUpdateBeforeExtraction</key><true/>

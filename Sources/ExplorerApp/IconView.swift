@@ -86,7 +86,7 @@ private final class IconTile: Surface {
 final class FileIconItem: NSCollectionViewItem {
     static let identifier = NSUserInterfaceItemIdentifier("FileIconItem")
     private let picture = NSImageView()
-    private let name = NSTextField(wrappingLabelWithString: "")
+    private let name = InlineRenameField()
     private let location = FolderLocationLink()
     private var thumbnail: UUID?
     private var representedPath: String?
@@ -139,6 +139,9 @@ final class FileIconItem: NSCollectionViewItem {
         }
     }
     func onAccessibilityPress(_ action: @escaping () -> Void) { (view as? IconTile)?.onPress = action }
+    func beginRenaming(_ item: FileItem, submit: @escaping (String) -> Void) {
+        name.beginRenaming(item.name, selectStem: !item.isDirectory, submit: submit)
+    }
     func cancelThumbnail() { ThumbnailStore.shared.cancel(thumbnail); thumbnail = nil; representedPath = nil }
     override func prepareForReuse() {
         cancelThumbnail()

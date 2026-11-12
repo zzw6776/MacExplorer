@@ -136,7 +136,7 @@ extension BrowserViewController {
     }
     func updateSearchStatus() {
         if tab.loading { progress.startAnimation(nil) } else { progress.stopAnimation(nil) }
-        let count = tab.visible.count.formatted(), scanned = tab.searchScanned.formatted()
+        let count = tab.visible.count, scanned = tab.searchScanned
         if tab.error != nil { status.stringValue = L("text.search.unavailable.23ae8063"); detail.stringValue = ""; return }
         status.stringValue = L("text.argument.results.2edd6105", count)
         if !selectedItems.isEmpty { status.stringValue += L("text.argument.selected.b78421e3", selectedItems.count) }

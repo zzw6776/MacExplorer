@@ -12,6 +12,14 @@ MacExplorer brings familiar tabs, a folder tree, drive overviews, and keyboard s
 
 ## Download
 
+本 Fork 推送到 `main` 后，会在 [GitHub Actions](https://github.com/zzw6776/MacExplorer/actions/workflows/ci.yml) 的 **Build Explorer DMG** 中自动生成 Apple Silicon / Intel 通用 DMG。打开成功的运行记录，在 **Artifacts** 下载 `MacExplorer-DMG-运行编号`，解压后打开 DMG，将 Explorer 拖到 Applications 替换安装。
+
+开发版固定使用同一份自签名证书，不需要 Apple 开发者账号；尚未经过 Apple 公证，下载后的系统打开提示仍需手动确认。已有权限能否延续取决于签名身份保持一致。
+
+仓库需配置 Secrets `EXPLORER_DEV_P12_BASE64`、`EXPLORER_DEV_P12_PASSWORD`，以及 Variable `EXPLORER_DEV_CERT_SHA1`。证书包含私钥，必须通过 Secrets 保存，不能提交到源码；CI 只在推送或手动运行时导入证书，PR 检查使用临时签名，不上传安装包。也可在 Actions 页面通过 **Run workflow** 手动打包，产物保留 30 天。
+
+以下是上游官方版下载：
+
 [Download Explorer for Mac](https://explorer.bquick.io/#download) · [Release notes and checksums](https://github.com/binaryquest/MacExplorer/releases/latest)
 
 Open the DMG and drag **Explorer** into **Applications**. The app is Developer ID signed and notarized by Apple, with one universal download for Apple Silicon and Intel. Future updates are available through **Explorer → Check for Updates…**; automatic update preferences are in **Settings → Updates**.
@@ -45,13 +53,14 @@ Two panes make it easy to work across folders, with independent tabs and views.
 You need **macOS 14 or later** and a **Swift 6 toolchain** from Xcode or Xcode Command Line Tools.
 
 ```sh
-git clone https://github.com/binaryquest/MacExplorer.git
+git clone https://github.com/zzw6776/MacExplorer.git
 cd MacExplorer
+zsh scripts/create-local-signing-identity.sh
 zsh scripts/build.sh
 open build/Explorer.app
 ```
 
-The build script creates `build/Explorer.app`, generates its icon, embeds Sparkle, and applies a local ad-hoc signature. Automatic updates are disabled in source builds; use the signed download above for automatic updates.
+The build script creates `build/Explorer.app`, generates its icon, embeds Sparkle, and signs it with the fixed local development identity. Run `zsh scripts/dev-dmg.sh` to create a native-architecture development DMG in `build/dmg/`, or add `--universal` for Apple Silicon and Intel. Automatic updates are disabled in source builds.
 
 The app appears as **Explorer** in macOS. Open **Explorer → Settings…** to change the global shortcut, appearance, startup behavior, and browsing defaults. The global shortcut works while Explorer is running, including when its last window is closed; it can be changed or disabled if it conflicts with another app.
 

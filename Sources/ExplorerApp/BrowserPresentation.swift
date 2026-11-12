@@ -55,7 +55,10 @@ extension BrowserViewController: NSCollectionViewDataSource, NSCollectionViewDel
     }
     @objc func changeIconSort(_ sender: NSMenuItem) {
         guard let raw = sender.representedObject as? String, let key = FileSortKey(rawValue: raw) else { return }
-        rememberSelection(); tab.sort.key = key; updateSortPresentation(); applyView(); saveSession()
+        rememberSelection(); tab.sort.key = key; savePresentationPreference(); updateSortPresentation(); applyView(); saveSession()
+    }
+    func savePresentationPreference() {
+        AppPreferences.shared.presentation = TabPresentation(sort: tab.sort, grouping: tab.grouping)
     }
     func updateSortPresentation() {
         let wasSuppressed = suppressSelection; suppressSelection = true
@@ -65,6 +68,7 @@ extension BrowserViewController: NSCollectionViewDataSource, NSCollectionViewDel
         for item in sortPicker.menu?.items ?? [] {
             if item.action == #selector(changeIconSort(_:)) { item.state = (item.representedObject as? String) == tab.sort.key.rawValue ? .on : .off }
             if item.action == #selector(setSortDirection(_:)) { item.state = (item.representedObject as? Bool) == tab.sort.ascending ? .on : .off }
+            if item.action == #selector(toggleFoldersFirst(_:)) { item.state = tab.sort.foldersFirst ? .on : .off }
             for group in item.submenu?.items ?? [] {
                 if group.action == #selector(changeGrouping(_:)) { group.state = (group.representedObject as? String) == tab.grouping.key.rawValue ? .on : .off }
                 if group.action == #selector(setGroupDirection(_:)) {

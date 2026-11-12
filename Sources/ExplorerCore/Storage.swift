@@ -49,7 +49,7 @@ public enum StorageDiscovery {
         let capacityURL = url.path == "/" && FileManager().fileExists(atPath: "/System/Volumes/Data") ? URL(fileURLWithPath: "/System/Volumes/Data") : url
         let capacity = try? capacityURL.resourceValues(forKeys: [.volumeTotalCapacityKey, .volumeAvailableCapacityKey, .volumeIsReadOnlyKey])
         let readOnly = values?.volumeIsReadOnly ?? false
-        return StorageLocation(url: url, title: values?.volumeName ?? (url.path == "/" ? "Macintosh HD" : url.lastPathComponent),
+        return StorageLocation(url: url, title: values?.volumeName ?? (url.path == "/" ? L("text.macintosh.hd.a9fdbf3a") : url.lastPathComponent),
             detail: kind == .network ? L("text.network.drive.e5c4e330") : url.path == "/" ? L("text.local.disk.8c755697") : readOnly ? L("text.read.only.volume.e2d3bf14") : kind == .internalDrive ? L("text.local.disk.8c755697") : L("text.external.volume.a4deb99e"), kind: kind,
             capacity: StorageCapacity(total: capacity?.volumeTotalCapacity.map(Int64.init), available: capacity?.volumeAvailableCapacity.map(Int64.init)), readOnly: readOnly)
     }
@@ -67,20 +67,23 @@ public enum StorageDiscovery {
         let name = url.lastPathComponent
         let google = name.hasPrefix("GoogleDrive") || name.hasPrefix("Google Drive")
         let provider = google ? "Google Drive" : name.hasPrefix("OneDrive") ? "OneDrive" : name.hasPrefix("Dropbox") ? "Dropbox" : name.components(separatedBy: "-").first ?? name
+        let providerTitle = google ? L("text.google.drive.915ef4ba") : name.hasPrefix("OneDrive") ? L("text.onedrive.8a7a54d3") : name.hasPrefix("Dropbox") ? L("text.dropbox.4750d0a1") : provider
         let prefix = google && name.hasPrefix("GoogleDrive") ? "GoogleDrive" : provider
         let account = String(name.dropFirst(min(prefix.count, name.count))).trimmingCharacters(in: CharacterSet(charactersIn: "- "))
-        let detail = account.isEmpty ? provider : "\(provider) · \(account)"
+        let detail = account.isEmpty ? providerTitle : "\(providerTitle) · \(account)"
         let kind: StorageLocation.Kind = google ? .googleDrive : .cloud
-        return StorageLocation(url: url, title: account.isEmpty ? provider : "\(provider) (\(account))", detail: detail, kind: kind)
+        return StorageLocation(url: url, title: account.isEmpty ? providerTitle : "\(providerTitle) (\(account))", detail: detail, kind: kind)
     }
     public static func cloud(_ url: URL) -> StorageLocation {
         var root = cloudRoot(url)
         if root.kind == .googleDrive {
             let known = ["my drive", "shared drives", "other computers", "computers"]
+            let titles = ["my drive": L("text.my.drive.428d9cf8"), "shared drives": L("text.shared.drives.bae61950"),
+                          "other computers": L("text.other.computers.44ed2032"), "computers": L("text.computers.680cb3c6")]
             let urls = (try? FileManager().contentsOfDirectory(at: url, includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles])) ?? []
             root.children = urls.filter { known.contains($0.lastPathComponent.lowercased()) && (try? $0.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true }
                 .sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
-                .map { StorageLocation(url: $0, title: $0.lastPathComponent, detail: root.detail, kind: root.kind) }
+                .map { StorageLocation(url: $0, title: titles[$0.lastPathComponent.lowercased()] ?? $0.lastPathComponent, detail: root.detail, kind: root.kind) }
         }
         return root
     }

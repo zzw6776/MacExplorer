@@ -72,13 +72,17 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     private let loginStatus = NSTextField(wrappingLabelWithString: "")
     private let loginSettings = NSButton(title: L("text.open.login.items.settings.cab0594e"), target: nil, action: nil)
     private let hidden = NSButton(checkboxWithTitle: L("text.show.hidden.files.and.folders.c73c36d4"), target: nil, action: nil)
+    private let keepSidebarFixed = NSButton(checkboxWithTitle: L("text.keep.sidebar.unchanged.when.navigating.the.right.pane.caaa6a5a"), target: nil, action: nil)
+    private let fullDiskAccess = NSButton(checkboxWithTitle: L("text.full.disk.access.permission.6ecbf10a"), target: nil, action: nil)
+    private let fullDiskAccessStatus = NSTextField(wrappingLabelWithString: "")
+    private let openFullDiskAccessSettings = NSButton(title: L("text.open.full.disk.access.settings.f735ba01"), target: nil, action: nil)
     private let startup = NSPopUpButton(), appearance = NSPopUpButton(), viewMode = NSPopUpButton(), scope = NSPopUpButton(), shortcutAction = NSPopUpButton()
     private let terminalApplication = NSPopUpButton(), editorApplication = NSPopUpButton()
 
     init(preferences: AppPreferences = .shared, shortcutController: GlobalShortcutController, updates: AppUpdateController) {
         self.preferences = preferences; self.shortcutController = shortcutController
         self.updates = updates
-        let window = SettingsWindow(contentRect: NSRect(x: 0, y: 0, width: 590, height: 480),
+        let window = SettingsWindow(contentRect: NSRect(x: 0, y: 0, width: 590, height: 540),
                                     styleMask: [.titled, .closable], backing: .buffered, defer: false)
         super.init(window: window)
         window.title = L("text.explorer.settings.ff454ece"); window.isReleasedWhenClosed = false
@@ -89,11 +93,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         keyboard.onDisappear = { [weak self] in self?.recorder.cancel() }
         let updatePage = NSViewController(); updatePage.view = updatesView()
         let applications = NSViewController(); applications.view = applicationsView()
-        for (controller, title, symbol) in [(general, L("text.general.c910d474"), "gearshape"), (applications, L("text.applications.98e33b0f"), "app.badge"), (keyboard, L("text.shortcut.5753ea37"), "keyboard"), (updatePage, L("text.updates.22e2bada"), "arrow.triangle.2.circlepath")] {
+        let permissions = NSViewController(); permissions.view = permissionsView()
+        for (controller, title, symbol) in [(general, L("text.general.c910d474"), "gearshape"), (permissions, L("text.permissions.15d56f1d"), "hand.raised"), (applications, L("text.applications.98e33b0f"), "app.badge"), (keyboard, L("text.shortcut.5753ea37"), "keyboard"), (updatePage, L("text.updates.22e2bada"), "arrow.triangle.2.circlepath")] {
             let item = NSTabViewItem(viewController: controller); item.label = title
             item.image = NSImage(systemSymbolName: symbol, accessibilityDescription: title); tabs.addTabViewItem(item)
         }
-        tabs.preferredContentSize = NSSize(width: 590, height: 480)
+        tabs.preferredContentSize = NSSize(width: 590, height: 540)
         window.contentViewController = tabs; window.center()
         NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: AppPreferences.changed, object: preferences)
         NotificationCenter.default.addObserver(self, selector: #selector(refresh), name: NSApplication.didBecomeActiveNotification, object: nil)
@@ -103,7 +108,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     private func page(_ title: String, subtitle: String, content: [NSView]) -> NSView {
-        let root = NSView(frame: NSRect(x: 0, y: 0, width: 590, height: 480))
+        let root = NSView(frame: NSRect(x: 0, y: 0, width: 590, height: 540))
         let heading = NSTextField(labelWithString: title); heading.font = .systemFont(ofSize: 20, weight: .semibold)
         let caption = note(subtitle)
         let stack = NSStackView(views: [heading, caption] + content)
@@ -137,6 +142,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         popup(viewMode, titles: FileViewMode.allCases.map(\.title), action: #selector(viewChanged), label: L("text.default.folder.view.1ea848c6"))
         popup(scope, titles: [L("text.current.folder.1a5db523"), L("text.all.subfolders.f25b8ff5")], action: #selector(scopeChanged), label: L("text.default.search.scope.70aaf185"))
         hidden.target = self; hidden.action = #selector(hiddenChanged)
+        keepSidebarFixed.target = self; keepSidebarFixed.action = #selector(keepSidebarFixedChanged)
         launchAtLogin.target = self; launchAtLogin.action = #selector(loginChanged)
         launchAtLogin.isEnabled = !DemoData.active
         loginStatus.font = .systemFont(ofSize: 12); loginStatus.textColor = .secondaryLabelColor
@@ -144,7 +150,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         return page(L("text.make.explorer.yours.c4b06dc7"), subtitle: L("text.changes.are.saved.automatically.98f075b8"), content: [
             row(L("text.open.new.windows.to.688255ed"), control: startup), row(L("text.appearance.3907fa7f"), control: appearance),
             row(L("text.default.folder.view.1ea848c6"), control: viewMode), row(L("text.default.search.scope.70aaf185"), control: scope),
-            hidden, note(L("text.view.and.search.defaults.apply.to.new.tabs.existing.tabs.aba96f55")),
+            hidden, keepSidebarFixed, note(L("text.view.and.search.defaults.apply.to.new.tabs.existing.tabs.aba96f55")),
             launchAtLogin, loginStatus, loginSettings
         ])
     }
@@ -166,6 +172,18 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
             shortcutStatus,
             note(L("text.click.the.shortcut.to.record.a.new.combination.while.enabled.45245b0c")),
             note(L("text.explorer.must.be.running.closing.all.browser.windows.keeps.the.125bc128"))
+        ])
+    }
+    private func permissionsView() -> NSView {
+        fullDiskAccess.target = self; fullDiskAccess.action = #selector(fullDiskAccessChanged)
+        fullDiskAccessStatus.font = .systemFont(ofSize: 12); fullDiskAccessStatus.textColor = .secondaryLabelColor
+        openFullDiskAccessSettings.bezelStyle = .rounded
+        openFullDiskAccessSettings.target = self; openFullDiskAccessSettings.action = #selector(openFullDiskAccess)
+        return page(L("text.permissions.15d56f1d"), subtitle: L("text.manage.macos.access.to.protected.files.4b8ecbd0"), content: [
+            fullDiskAccess,
+            note(L("text.full.disk.access.description.c9a46dc5")),
+            fullDiskAccessStatus,
+            openFullDiskAccessSettings
         ])
     }
     private func updatesView() -> NSView {
@@ -258,6 +276,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         viewMode.selectItem(at: FileViewMode.allCases.firstIndex(of: preferences.viewMode) ?? 0)
         scope.selectItem(at: preferences.searchScope == .folder ? 0 : 1)
         hidden.state = preferences.showHidden ? .on : .off
+        keepSidebarFixed.state = preferences.keepSidebarUnchangedWhileBrowsing ? .on : .off
+        refreshFullDiskAccessStatus()
         shortcutEnabled.state = preferences.shortcutEnabled ? .on : .off
         shortcutAction.selectItem(at: preferences.shortcutOpensNewWindow ? 1 : 0)
         if !recorder.isRecording { recorder.title = preferences.shortcut.title; updateShortcutStatus() }
@@ -276,6 +296,11 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         case .notFound: loginStatus.stringValue = L("text.off.enable.to.register.this.copy.of.explorer.for.login.5fecd6b7")
         @unknown default: loginStatus.stringValue = L("text.login.status.is.unavailable.2045f627")
         }
+    }
+    private func refreshFullDiskAccessStatus() {
+        let granted = FullDiskAccessPermission.isGranted()
+        fullDiskAccess.state = granted ? .on : .off
+        fullDiskAccessStatus.stringValue = granted ? L("text.full.disk.access.granted.fce88a67") : L("text.full.disk.access.not.granted.73348afd")
     }
     private func showShortcutStatus(_ text: String, error: Bool = false) {
         shortcutStatus.stringValue = text; shortcutStatus.textColor = error ? .systemRed : .secondaryLabelColor
@@ -315,6 +340,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
     @objc private func viewChanged() { preferences.viewMode = FileViewMode.allCases[viewMode.indexOfSelectedItem] }
     @objc private func scopeChanged() { preferences.searchScope = scope.indexOfSelectedItem == 0 ? .folder : .subfolders }
     @objc private func hiddenChanged() { preferences.showHidden = hidden.state == .on }
+    @objc private func keepSidebarFixedChanged() { preferences.keepSidebarUnchangedWhileBrowsing = keepSidebarFixed.state == .on }
+    @objc private func fullDiskAccessChanged() {
+        if fullDiskAccess.state == .on { FullDiskAccessPermission.request() }
+        refreshFullDiskAccessStatus()
+    }
+    @objc private func openFullDiskAccess() { FullDiskAccessPermission.request() }
     @objc private func shortcutActionChanged() { preferences.shortcutOpensNewWindow = shortcutAction.indexOfSelectedItem == 1 }
     @objc private func loginChanged() {
         do {

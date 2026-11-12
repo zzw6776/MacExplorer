@@ -10,8 +10,10 @@ enum DemoData {
         URL(fileURLWithPath: Bundle.main.object(forInfoDictionaryKey: "ExplorerDemoRoot") as? String ?? "/tmp/MacExplorer Demo", isDirectory: true)
     }
     static var favorites: Favorites {
-        Favorites([Favorite(url: root, name: "Home")] + ["Projects", "Documents", "Pictures", "Downloads"].map {
-            Favorite(url: root.appendingPathComponent($0), name: $0)
+        let folders = [("Projects", L("text.projects.04e2a972")), ("Documents", L("text.documents.b4e929d8")),
+                       ("Pictures", L("text.pictures.1e624500")), ("Downloads", L("text.downloads.d5fdc1af"))]
+        return Favorites([Favorite(url: root, name: L("text.home.3a786953"))] + folders.map {
+            Favorite(url: root.appendingPathComponent($0.0), name: $0.1)
         })
     }
     static var session: WorkspaceSession {
@@ -20,21 +22,22 @@ enum DemoData {
     }
     static var locations: [StorageLocation] {
         let gb: Int64 = 1_000_000_000
-        func drive(_ name: String, _ kind: StorageLocation.Kind, total: Int64, free: Int64) -> StorageLocation {
-            StorageLocation(url: root.appendingPathComponent("Devices/" + name), title: name,
-                            detail: kind == .internalDrive ? "Local disk" : kind == .network ? "Network drive" : "External volume",
+        func drive(_ path: String, _ title: String, _ kind: StorageLocation.Kind, total: Int64, free: Int64) -> StorageLocation {
+            StorageLocation(url: root.appendingPathComponent("Devices/" + path), title: title,
+                            detail: kind == .internalDrive ? L("text.local.disk.8c755697") : kind == .network ? L("text.network.drive.e5c4e330") : L("text.external.volume.a4deb99e"),
                             kind: kind, capacity: StorageCapacity(total: total * gb, available: free * gb))
         }
         let google = root.appendingPathComponent("Cloud/Google Drive")
-        return [drive("Macintosh HD", .internalDrive, total: 1000, free: 428),
-                drive("Studio SSD", .externalDrive, total: 2000, free: 1240),
-                drive("Archive", .externalDrive, total: 500, free: 34),
-                drive("Shared Projects", .network, total: 4000, free: 2160),
-                StorageLocation(url: google, title: "Google Drive", detail: "Google Drive · demo@example.test", kind: .googleDrive, children: [
-                    StorageLocation(url: google.appendingPathComponent("My Drive"), title: "My Drive", detail: "Google Drive · demo@example.test", kind: .googleDrive),
-                    StorageLocation(url: google.appendingPathComponent("Shared drives"), title: "Shared drives", detail: "Google Drive · demo@example.test", kind: .googleDrive)
+        let googleTitle = L("text.google.drive.915ef4ba"), googleDetail = googleTitle + " · demo@example.test"
+        return [drive("Macintosh HD", L("text.macintosh.hd.a9fdbf3a"), .internalDrive, total: 1000, free: 428),
+                drive("Studio SSD", L("text.studio.ssd.dccd7888"), .externalDrive, total: 2000, free: 1240),
+                drive("Archive", L("text.archive.66f4804e"), .externalDrive, total: 500, free: 34),
+                drive("Shared Projects", L("text.shared.projects.0b47e3bf"), .network, total: 4000, free: 2160),
+                StorageLocation(url: google, title: googleTitle, detail: googleDetail, kind: .googleDrive, children: [
+                    StorageLocation(url: google.appendingPathComponent("My Drive"), title: L("text.my.drive.428d9cf8"), detail: googleDetail, kind: .googleDrive),
+                    StorageLocation(url: google.appendingPathComponent("Shared drives"), title: L("text.shared.drives.bae61950"), detail: googleDetail, kind: .googleDrive)
                 ]),
-                StorageLocation(url: root.appendingPathComponent("Cloud/OneDrive"), title: "OneDrive", detail: "Sample workspace", kind: .cloud)]
+                StorageLocation(url: root.appendingPathComponent("Cloud/OneDrive"), title: L("text.onedrive.8a7a54d3"), detail: L("text.sample.workspace.01822ab0"), kind: .cloud)]
     }
     static func configure() {
         guard active else { return }
