@@ -52,6 +52,8 @@ Two panes make it easy to work across folders, with independent tabs and views.
 
 You need **macOS 14 or later** and a **Swift 6 toolchain** from Xcode or Xcode Command Line Tools.
 
+GitHub Actions 固定使用 Xcode 26.3，并生成 Apple Silicon / Intel 通用 DMG。
+
 ```sh
 git clone https://github.com/zzw6776/MacExplorer.git
 cd MacExplorer
